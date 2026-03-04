@@ -1,8 +1,10 @@
 {
   "name": "audio-visualizer",
 
-  // Node.js 22 LTS — matches the runtime used locally.
-  "image": "mcr.microsoft.com/devcontainers/node:1-22",
+  // Purpose-built TypeScript + Node.js image — pre-cached in Codespaces, much
+  // lighter than universal:2 (no Python/Java/Go/etc.). Includes Node 22 LTS,
+  // TypeScript compiler, ESLint, nvm, yarn, and git out of the box.
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:22",
 
   // Forward both dev servers so the browser preview links appear automatically.
   "forwardPorts": [5173, 4321],
@@ -38,7 +40,9 @@
         // Use the workspace TypeScript version rather than VS Code's bundled one.
         "typescript.tsdk": "node_modules/typescript/lib",
         "editor.formatOnSave": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        // Auto-run the "Start all servers" folderOpen task without prompting.
+        "task.allowAutomaticTasks": "on"
       }
     }
   }
