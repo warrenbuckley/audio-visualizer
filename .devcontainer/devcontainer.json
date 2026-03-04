@@ -1,8 +1,10 @@
 {
   "name": "audio-visualizer",
 
-  // Node.js 22 LTS — matches the runtime used locally.
-  "image": "mcr.microsoft.com/devcontainers/node:1-22",
+  // GitHub's universal image — pre-cached in every Codespace so no cold pull
+  // is needed. Includes Node.js (LTS + current), npm, nvm, git, and common
+  // build tools out of the box.
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
 
   // Forward both dev servers so the browser preview links appear automatically.
   "forwardPorts": [5173, 4321],
