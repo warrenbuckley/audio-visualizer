@@ -1,0 +1,32 @@
+audio-visualizer
+Copyright (c) 2026 Warren Buckley
+
+This product contains code derived from the LiveKit components-js project.
+
+  LiveKit components-js
+  https://github.com/livekit/components-js
+  Copyright 2023 LiveKit, Inc.
+  Licensed under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
+
+The following source files contain algorithms and visual design ported from
+LiveKit components-js:
+
+  src/audio-analyzer.ts
+    Derived from: packages/react/src/hooks/useTrackVolume.ts
+    Ported: normalizeDb() function, multiband frequency bin range (100–199),
+            and the sqrt normalisation curve from useMultibandTrackVolume.
+    Changes: Rewritten as a standalone TypeScript class (AudioAnalyzer) using
+             the browser's getUserMedia API directly, with no LiveKit SDK
+             dependency. The algorithm itself is unchanged.
+
+  src/audio-visualizer.ts
+    Derived from: packages/shadcn/components/agents-ui/agent-audio-visualizer-bar.tsx
+    Ported: Visual design concept — pill-shaped bars, proportional sizing
+            variants, and frequency-driven height animation.
+    Changes: Rewritten as a Lit WebComponent (LitElement) instead of a React
+             component. Microphone source, size variants, CSS custom properties,
+             and device-switching API are new original work.
+
+A copy of the Apache License, Version 2.0 is available at:
+https://github.com/livekit/components-js/blob/main/LICENSE

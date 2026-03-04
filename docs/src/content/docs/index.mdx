@@ -1,0 +1,61 @@
+---
+title: "<audio-visualizer>"
+description: A Lit WebComponent that visualises real-time microphone frequency bands as animated bars. Zero runtime dependencies beyond Lit.
+template: splash
+hero:
+  title: "<audio-visualizer>"
+  tagline: Real-time microphone audio as animated frequency-band bars. A Lit WebComponent — zero dependencies beyond Lit, works in any framework.
+  actions:
+    - text: Get started
+      link: /audio-visualizer/getting-started/installation/
+      icon: right-arrow
+      variant: primary
+    - text: Playground
+      link: /audio-visualizer/playground/
+      icon: puzzle
+      variant: minimal
+    - text: GitHub
+      link: https://github.com/warrenbuckley/audio-visualizer
+      icon: github
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Why `<audio-visualizer>`?
+
+<CardGrid>
+  <Card title="Drop-in ready" icon="rocket">
+    One import registers the element globally. No framework setup, no build tool required when using the standalone CDN build.
+  </Card>
+  <Card title="Framework agnostic" icon="puzzle">
+    Works in plain HTML, React, Vue, Angular, Svelte — anywhere you can write a custom element tag.
+  </Card>
+  <Card title="Faithful to LiveKit" icon="bars">
+    Ported from LiveKit's `AgentAudioVisualizerBar`. Uses the same dB-normalised multiband analysis — the visual behaviour matches exactly.
+  </Card>
+  <Card title="Themeable" icon="seti:css">
+    CSS custom properties (`--audio-visualizer-color`, `--audio-visualizer-transition`) make it fit any design system.
+  </Card>
+</CardGrid>
+
+## Minimal example
+
+```html
+<!-- 1. Load the component (standalone CDN — zero install) -->
+<script type="module"
+  src="https://cdn.jsdelivr.net/npm/audio-visualizer/dist/audio-visualizer.standalone.js">
+</script>
+
+<!-- 2. Place the element -->
+<audio-visualizer id="viz" size="md" style="--audio-visualizer-color: #6366f1"></audio-visualizer>
+<button id="btn">Start microphone</button>
+
+<script type="module">
+  document.getElementById('btn').addEventListener('click', async () => {
+    await document.getElementById('viz').startMicrophone();
+  });
+</script>
+```
+
+Save as an `.html` file and open in any modern browser (served via HTTPS or `localhost` for mic access).

@@ -1,0 +1,45 @@
+# ── Dependencies ──────────────────────────────────────────────────────────────
+node_modules/
+
+# ── Build output ──────────────────────────────────────────────────────────────
+dist/
+
+# ── TypeScript ────────────────────────────────────────────────────────────────
+*.tsbuildinfo
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ── Astro docs ────────────────────────────────────────────────────────────────
+# Build output
+docs/dist/
+# Generated types & content cache
+docs/.astro/
+# Standalone bundle copied from dist/ by scripts/copy-component.mjs
+# (regenerated automatically on `npm run dev` / `npm run build`)
+docs/public/audio-visualizer.standalone.js
+
+# ── Environment variables ─────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Claude Code ───────────────────────────────────────────────────────────────
+# Local permission allowlist — machine-specific, not for sharing
+.claude/settings.local.json
+
+# ── Editors ───────────────────────────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo

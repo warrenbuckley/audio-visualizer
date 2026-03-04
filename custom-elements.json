@@ -1,0 +1,339 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "src/audio-analyzer.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Captures audio from the user's microphone and exposes normalised\nper-band volume levels for driving a visualiser.\n\nUse the static AudioAnalyzer.create factory — the constructor\nis intentionally private because setup is async (mic permission + Web\nAudio API initialisation).",
+          "name": "AudioAnalyzer",
+          "members": [
+            {
+              "kind": "field",
+              "name": "context",
+              "type": {
+                "text": "AudioContext"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "default": "new AudioContext()"
+            },
+            {
+              "kind": "field",
+              "name": "analyser",
+              "type": {
+                "text": "AnalyserNode"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "default": "analyser"
+            },
+            {
+              "kind": "field",
+              "name": "source",
+              "type": {
+                "text": "MediaStreamAudioSourceNode"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "default": "source"
+            },
+            {
+              "kind": "field",
+              "name": "dataArray",
+              "type": {
+                "text": "Float32Array<ArrayBuffer>"
+              },
+              "privacy": "private",
+              "readonly": true,
+              "description": "Pre-allocated buffer reused on every getBands call to avoid\nper-frame allocations.",
+              "default": "new Float32Array(analyser.frequencyBinCount)"
+            },
+            {
+              "kind": "method",
+              "name": "create",
+              "static": true,
+              "return": {
+                "type": {
+                  "text": ""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "deviceId",
+                  "optional": true,
+                  "type": {
+                    "text": "string"
+                  },
+                  "description": "Optional `MediaDeviceInfo.deviceId` to use a specific\nmicrophone. Omit (or pass `undefined`) to use the system default.\nObtain device IDs with `navigator.mediaDevices.enumerateDevices()`."
+                }
+              ],
+              "description": "Requests microphone access and creates a fully initialised `AudioAnalyzer`.\n\nMust be called from a user-gesture handler (e.g. a button click) to\nsatisfy the browser's autoplay / permissions policy."
+            },
+            {
+              "kind": "method",
+              "name": "getBands",
+              "return": {
+                "type": {
+                  "text": ""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "count",
+                  "type": {
+                    "text": "number"
+                  },
+                  "description": "Number of frequency bands to return. Should match the\n`bar-count` attribute on `<audio-visualizer>` (typically 3 or 5)."
+                }
+              ],
+              "description": "Reads the current frequency spectrum and returns `count` normalised\nband volumes, each in the range [0, 1].\n\nCall this inside a `requestAnimationFrame` loop for smooth animation.\nThe underlying `Float32Array` buffer is reused between calls — do not\nhold a reference to the returned array across frames; copy if needed.\n\n**Band selection:** only FFT bins 100–199 are used (the ~2–5 kHz\n\"presence\" range). This matches LiveKit's `loPass=100, hiPass=200`\ndefaults and gives the most perceptually balanced response to speech."
+            },
+            {
+              "kind": "method",
+              "name": "destroy",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Disconnects the microphone stream and closes the `AudioContext`,\nreleasing all associated resources.\n\nAfter calling `destroy()` the instance must not be used again.\nCreate a new `AudioAnalyzer` via AudioAnalyzer.create if\nyou need to restart."
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "AudioAnalyzer",
+          "declaration": {
+            "name": "AudioAnalyzer",
+            "module": "src/audio-analyzer.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/audio-visualizer.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "`<audio-visualizer>` — a real-time microphone frequency visualiser.\n\nDisplays N animated bars whose heights reflect the current volume in\ncorresponding frequency bands captured from the user's microphone.\n\n## Quick start\n\n```html\n<!-- 1. Import (once per page) -->\n<script type=\"module\" src=\"audio-visualizer.js\"></script>\n\n<!-- 2. Place the element -->\n<audio-visualizer id=\"viz\" size=\"md\" color=\"#6366f1\"></audio-visualizer>\n\n<!-- 3. Start from a user gesture -->\n<button onclick=\"document.getElementById('viz').startMicrophone()\">\n  Start\n</button>\n```\n\n## Attributes\n\n| Attribute    | Type            | Default        | Description                          |\n|--------------|-----------------|----------------|--------------------------------------|\n| `size`       | `VisualizerSize`| `'md'`         | Visual scale of the component        |\n| `color`      | CSS color string| `currentColor` | Bar fill colour                      |\n| `bar-count`  | `number`        | 3 or 5         | Number of frequency bands to display |\n\n## Methods\n\n| Method                          | Description                                       |\n|---------------------------------|---------------------------------------------------|\n| `startMicrophone(deviceId?)`    | Request mic access and start the animation loop   |\n| `stopMicrophone()`              | Stop the animation loop and release the mic       |\n\n## CSS custom properties\n\n| Property                              | Default        | Description                                                       |\n|---------------------------------------|----------------|-------------------------------------------------------------------|\n| `--audio-visualizer-color`            | `currentColor` | Bar colour. Overrides the `color` attribute and CSS inheritance   |\n| `--audio-visualizer-transition`       | `100ms`        | Bar height transition duration                                    |",
+          "name": "AudioVisualizer",
+          "cssProperties": [
+            {
+              "description": "Bar fill colour. Takes priority over the `color` attribute and CSS colour inheritance (`currentColor`). Set via CSS for stylesheet-based theming. Default: unset (falls back to `color` attr or the inherited `currentColor`).",
+              "name": "--audio-visualizer-color"
+            },
+            {
+              "description": "Transition duration for bar height changes. Increase for a smoother, slower response; decrease for snappier reaction to transient sounds. Default: `100ms`.",
+              "name": "--audio-visualizer-transition"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "VisualizerSize"
+              },
+              "default": "'md'",
+              "description": "Visual size variant.\nControls bar width, container height, and gap between bars.",
+              "attribute": "size"
+            },
+            {
+              "kind": "field",
+              "name": "color",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Bar fill colour — any valid CSS color value (`#hex`, `rgb()`, named\ncolour, etc.). When omitted the bars inherit `color` from the\nsurrounding document via `currentColor`.\n\nPrefer the `--audio-visualizer-color` CSS custom property for\nstylesheet-based theming — it takes priority over this attribute.",
+              "attribute": "color"
+            },
+            {
+              "kind": "field",
+              "name": "barCount",
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "Number of frequency-band bars to display.\nDefaults to 3 for `icon`/`sm` sizes and 5 for `md`/`lg`/`xl`.",
+              "attribute": "bar-count"
+            },
+            {
+              "kind": "field",
+              "name": "bands",
+              "type": {
+                "text": "number[]"
+              },
+              "privacy": "private",
+              "default": "[]",
+              "description": "Normalised [0, 1] volume per band, updated every animation frame."
+            },
+            {
+              "kind": "field",
+              "name": "micState",
+              "type": {
+                "text": "'idle' | 'requesting' | 'active' | 'error'"
+              },
+              "privacy": "private",
+              "default": "'idle'",
+              "description": "Current lifecycle state of the microphone stream."
+            },
+            {
+              "kind": "field",
+              "name": "analyzer",
+              "type": {
+                "text": "AudioAnalyzer | undefined"
+              },
+              "privacy": "private",
+              "description": "Multiband frequency analyzer backed by the Web Audio API."
+            },
+            {
+              "kind": "field",
+              "name": "rafId",
+              "type": {
+                "text": "number | undefined"
+              },
+              "privacy": "private",
+              "description": "ID returned by `requestAnimationFrame`, used to cancel the loop."
+            },
+            {
+              "kind": "field",
+              "name": "isActive",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "`true` while a microphone stream is active and the animation loop is\nrunning. Useful for toggling button labels or disabling UI controls.",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "startMicrophone",
+              "return": {
+                "type": {
+                  "text": ""
+                }
+              },
+              "parameters": [
+                {
+                  "name": "deviceId",
+                  "optional": true,
+                  "type": {
+                    "text": "string"
+                  },
+                  "description": "Optional `MediaDeviceInfo.deviceId` for a specific\nmicrophone. Obtain IDs via `navigator.mediaDevices.enumerateDevices()`.\nOmit to use the system default input device."
+                }
+              ],
+              "description": "Requests microphone access and starts the bar animation loop.\n\n- **Must be called from a user gesture** (e.g. a button `click` handler)\n  to satisfy the browser's permissions policy.\n- If already active, the current stream is stopped and a new one is\n  started with the supplied `deviceId` — safe to call on device switch."
+            },
+            {
+              "kind": "method",
+              "name": "stopMicrophone",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Stops the animation loop and releases the microphone stream.\n\nSafe to call at any time, including when the mic is not yet active.\nThe component resets to its idle (dot) state."
+            },
+            {
+              "kind": "field",
+              "name": "tick",
+              "privacy": "private",
+              "description": "`requestAnimationFrame` callback — reads the latest band volumes from\nthe analyser and triggers a Lit re-render by updating `this.bands`.\n\nNamed `tick` rather than `animate` to avoid shadowing\n`Element.animate()` from the Web Animations API."
+            }
+          ],
+          "attributes": [
+            {
+              "name": "size",
+              "type": {
+                "text": "VisualizerSize"
+              },
+              "default": "'md'",
+              "description": "Visual size variant.\nControls bar width, container height, and gap between bars.",
+              "fieldName": "size",
+              "attribute": "size"
+            },
+            {
+              "name": "color",
+              "type": {
+                "text": "string | undefined"
+              },
+              "description": "Bar fill colour — any valid CSS color value (`#hex`, `rgb()`, named\ncolour, etc.). When omitted the bars inherit `color` from the\nsurrounding document via `currentColor`.\n\nPrefer the `--audio-visualizer-color` CSS custom property for\nstylesheet-based theming — it takes priority over this attribute.",
+              "fieldName": "color",
+              "attribute": "color"
+            },
+            {
+              "name": "bar-count",
+              "type": {
+                "text": "number | undefined"
+              },
+              "description": "Number of frequency-band bars to display.\nDefaults to 3 for `icon`/`sm` sizes and 5 for `md`/`lg`/`xl`.",
+              "fieldName": "barCount",
+              "attribute": "bar-count"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "audio-visualizer",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "AudioVisualizer",
+          "declaration": {
+            "name": "AudioVisualizer",
+            "module": "src/audio-visualizer.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "audio-visualizer",
+          "declaration": {
+            "name": "AudioVisualizer",
+            "module": "src/audio-visualizer.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/index.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "AudioVisualizer",
+          "declaration": {
+            "name": "AudioVisualizer",
+            "module": "./audio-visualizer.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "VisualizerSize",
+          "declaration": {
+            "name": "VisualizerSize",
+            "module": "./audio-visualizer.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "AudioAnalyzer",
+          "declaration": {
+            "name": "AudioAnalyzer",
+            "module": "./audio-analyzer.js"
+          }
+        }
+      ]
+    }
+  ]
+}

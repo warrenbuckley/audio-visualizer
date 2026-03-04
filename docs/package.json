@@ -1,0 +1,18 @@
+{
+  "name": "audio-visualizer-docs",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "predev": "node scripts/copy-component.mjs",
+    "dev": "astro dev",
+    "prebuild": "node scripts/copy-component.mjs",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.37.6",
+    "@catppuccin/starlight": "^1.1.1",
+    "astro": "^5.0.0"
+  }
+}

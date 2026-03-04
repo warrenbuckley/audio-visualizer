@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "audio-visualizer",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["node_modules/vite/bin/vite.js"],
+      "port": 5173
+    },
+    {
+      "name": "docs",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["docs/node_modules/astro/astro.js", "dev", "--root", "docs", "--port", "4321"],
+      "port": 4321
+    }
+  ]
+}

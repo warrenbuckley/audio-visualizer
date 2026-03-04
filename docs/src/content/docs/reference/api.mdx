@@ -1,0 +1,61 @@
+---
+title: API Reference
+description: Complete attribute, property, method, and CSS custom property reference for <audio-visualizer>.
+---
+
+import ApiReference from '../../../components/ApiReference.astro';
+
+The tables below are auto-generated from `custom-elements.json` at build time.
+
+<ApiReference />
+
+---
+
+## Attribute detail
+
+### `size`
+
+Controls the visual scale of the element. Bar dimensions and gap size all scale together:
+
+| Value | Height | Bar width | Gap | Default bars |
+|-------|--------|-----------|-----|--------------|
+| `icon` | 24 px | 4 px | 2 px | 3 |
+| `sm` | 56 px | 8 px | 4 px | 3 |
+| `md` | 112 px | 16 px | 8 px | 5 |
+| `lg` | 224 px | 32 px | 16 px | 5 |
+| `xl` | 448 px | 64 px | 32 px | 5 |
+
+### `color`
+
+Sets the bar fill colour directly. Any CSS colour string is valid.
+Prefer `--audio-visualizer-color` for stylesheet-level theming — it takes priority over this attribute when set.
+
+### `bar-count`
+
+Overrides the number of frequency bands shown. Defaults to `3` for `icon`/`sm` and `5` for `md`/`lg`/`xl`.
+
+---
+
+## Method detail
+
+### `startMicrophone(deviceId?)`
+
+```ts
+startMicrophone(deviceId?: string): Promise<void>
+```
+
+Requests microphone access and starts the animation loop.
+
+- **Must be called from a user gesture** (click, keydown, etc.) to satisfy the browser permissions policy.
+- If the mic is already active, the current stream is stopped automatically before opening the new one — safe to call repeatedly when switching devices.
+- Rejects with a `DOMException` on failure:
+  - `NotAllowedError` — user denied permission
+  - `OverconstrainedError` — the specified `deviceId` doesn't exist
+
+### `stopMicrophone()`
+
+```ts
+stopMicrophone(): void
+```
+
+Stops the animation loop and releases the microphone stream. Safe to call at any time, even before the mic has been started. Resets all bars to the idle pill state.

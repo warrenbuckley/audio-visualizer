@@ -1,0 +1,102 @@
+---
+title: Installation
+description: Install audio-visualizer via npm, JSR, or CDN — no build step required.
+---
+
+import { Tabs, TabItem, Code } from '@astrojs/starlight/components';
+
+## npm
+
+Install the package and its peer dependency:
+
+```bash
+npm install audio-visualizer lit
+```
+
+`lit` is a `peerDependency`. If your project already uses Lit, only the first install is needed. The main `dist/audio-visualizer.js` bundle keeps Lit **external** so you and the rest of your app share a single copy.
+
+---
+
+## JSR
+
+[JSR](https://jsr.io/@warrenbuckley/audio-visualizer) publishes the raw TypeScript source — no compiled output, no separate `.d.ts` needed.
+
+<Tabs>
+  <TabItem label="Deno">
+    ```bash
+    deno add jsr:@warrenbuckley/audio-visualizer
+    ```
+  </TabItem>
+  <TabItem label="Node.js">
+    ```bash
+    npx jsr add @warrenbuckley/audio-visualizer
+    ```
+  </TabItem>
+  <TabItem label="Bun">
+    ```bash
+    bunx jsr add @warrenbuckley/audio-visualizer
+    ```
+  </TabItem>
+</Tabs>
+
+Then import:
+
+```ts
+import { AudioVisualizer } from '@warrenbuckley/audio-visualizer';
+```
+
+JSR also auto-generates reference docs from the JSDoc comments — browse them at [jsr.io/@warrenbuckley/audio-visualizer](https://jsr.io/@warrenbuckley/audio-visualizer).
+
+---
+
+## CDN — no install
+
+The package ships a **standalone build** (`audio-visualizer.standalone.js`) where Lit is bundled inside (~35 kB / ~11 kB gzip). Drop it into any HTML page — no npm, no bundler, no import map.
+
+### jsDelivr
+
+```html
+<script type="module"
+  src="https://cdn.jsdelivr.net/npm/audio-visualizer/dist/audio-visualizer.standalone.js">
+</script>
+```
+
+### unpkg
+
+```html
+<script type="module"
+  src="https://unpkg.com/audio-visualizer/dist/audio-visualizer.standalone.js">
+</script>
+```
+
+### esm.sh (resolves Lit automatically)
+
+[esm.sh](https://esm.sh) rewrites bare specifiers at the CDN layer, so you can use the lighter **main build** (Lit external, ~10 kB) without installing anything:
+
+```html
+<script type="module">
+  import 'https://esm.sh/audio-visualizer';
+</script>
+```
+
+### Import map (multiple Lit components)
+
+An import map tells the browser how to resolve bare specifiers, letting you use the main build while sharing one copy of Lit across all components on the page:
+
+```html
+<script type="importmap">
+{
+  "imports": {
+    "lit":              "https://esm.sh/lit@3",
+    "lit/":             "https://esm.sh/lit@3/",
+    "audio-visualizer": "https://esm.sh/audio-visualizer"
+  }
+}
+</script>
+
+<script type="module">
+  import 'audio-visualizer';
+</script>
+```
+
+The `"lit/"` entry is a path-prefix mapping that covers all Lit sub-paths in one line. Generate a full version-pinned map (with optional SRI hashes) at [generator.jspm.io](https://generator.jspm.io/).

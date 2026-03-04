@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>audio-visualizer — plain HTML example</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        background: #0f0f0f;
+        color: #e5e5e5;
+        gap: 1.5rem;
+      }
+      h1 { font-size: 1.2rem; margin: 0; color: #a5b4fc; }
+      button {
+        padding: 0.5rem 1.5rem;
+        border: 1px solid #3b40a0;
+        border-radius: 0.5rem;
+        background: #1a1f3a;
+        color: #a5b4fc;
+        font-size: 0.9rem;
+        cursor: pointer;
+      }
+      button:hover { background: #222f5a; }
+    </style>
+
+    <!-- Standalone build — Lit bundled in, zero install needed -->
+    <script type="module"
+      src="https://cdn.jsdelivr.net/npm/audio-visualizer/dist/audio-visualizer.standalone.js">
+    </script>
+  </head>
+  <body>
+    <h1>&lt;audio-visualizer&gt; — plain HTML</h1>
+
+    <audio-visualizer
+      id="viz"
+      size="md"
+      bar-count="5"
+      style="--audio-visualizer-color: #6366f1;"
+    ></audio-visualizer>
+
+    <button id="btn">▶ Start microphone</button>
+
+    <script type="module">
+      const viz = document.getElementById('viz');
+      const btn = document.getElementById('btn');
+
+      btn.addEventListener('click', async () => {
+        if (viz.isActive) {
+          viz.stopMicrophone();
+          btn.textContent = '▶ Start microphone';
+        } else {
+          btn.textContent = '⏳ Requesting…';
+          try {
+            await viz.startMicrophone();
+            btn.textContent = '⏹ Stop microphone';
+          } catch (err) {
+            btn.textContent = '▶ Start microphone';
+            alert(err.message);
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

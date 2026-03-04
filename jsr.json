@@ -1,0 +1,11 @@
+{
+  "name": "@warrenbuckley/audio-visualizer",
+  "version": "1.0.0",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publish": {
+    "include": ["src/", "README.md", "LICENSE", "NOTICE"],
+    "exclude": ["src/main.ts"]
+  }
+}

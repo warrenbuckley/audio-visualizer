@@ -1,0 +1,173 @@
+---
+/**
+ * ApiReference.astro
+ *
+ * Reads custom-elements.json from the repo root and renders auto-generated
+ * API tables for attributes, properties, methods, and CSS custom properties.
+ */
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+// Resolve the repo-root custom-elements.json from this component's location:
+// docs/src/components/ → docs/src/ → docs/ → (repo root)
+const __dir = dirname(fileURLToPath(import.meta.url));
+const cemPath = resolve(__dir, '../../../custom-elements.json');
+
+let manifest: any;
+try {
+  manifest = JSON.parse(readFileSync(cemPath, 'utf8'));
+} catch {
+  manifest = null;
+}
+
+const allDecls = manifest?.modules?.flatMap((m: any) => m.declarations ?? []) ?? [];
+const el = allDecls.find((d: any) => d.tagName === 'audio-visualizer' || d.name === 'AudioVisualizer');
+
+const attributes: any[] = el?.attributes ?? [];
+const cssProperties: any[] = el?.cssProperties ?? [];
+const allMembers: any[] = el?.members ?? [];
+
+// Public methods (exclude private/protected, render, static helpers)
+const methods = allMembers.filter(
+  (m: any) =>
+    m.kind === 'method' &&
+    m.privacy !== 'private' &&
+    m.privacy !== 'protected' &&
+    !m.static &&
+    m.name !== 'render',
+);
+
+// Public JS properties that aren't reflected attributes (isActive etc.)
+const attrNames = new Set(attributes.map((a: any) => a.fieldName ?? a.name));
+const properties = allMembers.filter(
+  (m: any) =>
+    m.kind === 'field' &&
+    m.privacy !== 'private' &&
+    m.privacy !== 'protected' &&
+    m.name !== 'styles' &&
+    !attrNames.has(m.name),
+);
+
+// Hard-coded defaults not yet in the CEM
+const cssDefaults: Record<string, string> = {
+  '--audio-visualizer-color': 'currentColor',
+  '--audio-visualizer-transition': '100ms',
+};
+
+const attrDefaults: Record<string, string> = {
+  size: "'md'",
+  color: 'inherits currentColor',
+  'bar-count': '3 (icon/sm) or 5',
+};
+---
+
+{!el && (
+  <p style="color: var(--sl-color-orange); background: var(--sl-color-orange-low); padding: 0.75rem 1rem; border-radius: 0.375rem;">
+    ⚠️ Could not read <code>custom-elements.json</code>. Run <code>npm run build:cem</code> from the repo root to generate it.
+  </p>
+)}
+
+{el && (
+  <>
+    <section class="api-section">
+      <h2>Attributes</h2>
+      <p>All attributes are reactive — changing them after mount updates the UI immediately.</p>
+      <table class="api-table">
+        <thead>
+          <tr>
+            <th>Attribute</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {attributes.map((attr: any) => (
+            <tr>
+              <td><code>{attr.name}</code></td>
+              <td><code>{attr.type?.text ?? '—'}</code></td>
+              <td><code>{attrDefaults[attr.name] ?? '—'}</code></td>
+              <td set:html={attr.description ?? '—'} />
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="api-section">
+      <h2>Properties</h2>
+      <table class="api-table">
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {properties.map((prop: any) => (
+            <tr>
+              <td><code>{prop.name}</code></td>
+              <td><code>{prop.type?.text ?? '—'}</code></td>
+              <td set:html={prop.description ?? '—'} />
+            </tr>
+          ))}
+          {properties.length === 0 && (
+            <tr><td colspan="3" style="color: var(--sl-color-text-accent)">No additional properties.</td></tr>
+          )}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="api-section">
+      <h2>Methods</h2>
+      <table class="api-table">
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Signature</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {methods.map((m: any) => {
+            const params = (m.parameters ?? [])
+              .map((p: any) => `${p.name}${p.optional ? '?' : ''}: ${p.type?.text ?? 'unknown'}`)
+              .join(', ');
+            const ret = m.return?.type?.text ?? 'void';
+            return (
+              <tr>
+                <td><code>{m.name}</code></td>
+                <td><code>({params}) =&gt; {ret}</code></td>
+                <td set:html={m.description ?? '—'} />
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="api-section">
+      <h2>CSS Custom Properties</h2>
+      <table class="api-table">
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>Default</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {cssProperties.map((p: any) => (
+            <tr>
+              <td><code>{p.name}</code></td>
+              <td><code>{cssDefaults[p.name] ?? p.default ?? '—'}</code></td>
+              <td set:html={p.description ?? '—'} />
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  </>
+)}

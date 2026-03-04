@@ -1,0 +1,217 @@
+---
+/**
+ * Playground.astro — Interactive live demo.
+ *
+ * The standalone bundle is served from docs/public/ (copied there by
+ * scripts/copy-component.mjs). We pass the URL to the client script via a
+ * data-attribute so Astro's BASE_URL is resolved at build time, not runtime.
+ */
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+const componentUrl = `${base}audio-visualizer.standalone.js`;
+---
+
+<!-- Pass the resolved URL to the client script -->
+<div id="pg-config" data-component-url={componentUrl} hidden></div>
+
+<div class="pg-wrapper">
+
+  <!-- Controls -->
+  <div class="pg-controls">
+
+    <div class="pg-control">
+      <label for="pg-size">Size</label>
+      <select id="pg-size">
+        <option value="icon">icon — 24 px</option>
+        <option value="sm">sm — 56 px</option>
+        <option value="md" selected>md — 112 px</option>
+        <option value="lg">lg — 224 px</option>
+        <option value="xl">xl — 448 px</option>
+      </select>
+    </div>
+
+    <div class="pg-control">
+      <label for="pg-color">Color</label>
+      <input type="color" id="pg-color" value="#b7bdf8" />
+    </div>
+
+    <div class="pg-control">
+      <label for="pg-bars">Bar count</label>
+      <input type="number" id="pg-bars" value="5" min="2" max="10" />
+    </div>
+
+    <div class="pg-control">
+      <label for="pg-transition">Transition — <span id="pg-trans-val">100</span> ms</label>
+      <input type="range" id="pg-transition" value="100" min="20" max="500" step="10" />
+    </div>
+
+    <div class="pg-control">
+      <label for="pg-device">Microphone</label>
+      <select id="pg-device">
+        <option value="">Default microphone</option>
+      </select>
+    </div>
+
+  </div>
+
+  <!-- Live preview -->
+  <div class="pg-preview">
+    <audio-visualizer
+      id="pg-viz"
+      size="md"
+      bar-count="5"
+      style="--audio-visualizer-color: #b7bdf8;"
+    ></audio-visualizer>
+
+    <div class="pg-actions">
+      <button class="pg-btn" id="pg-start">▶ Start microphone</button>
+      <button class="pg-btn" id="pg-stop" disabled>⏹ Stop</button>
+    </div>
+
+    <p id="pg-error" style="color: #ed8796; font-size: 0.85rem; margin: 0; display: none;"></p>
+    <p id="pg-loading" style="color: #a5adcb; font-size: 0.85rem; margin: 0;">Loading component…</p>
+  </div>
+
+  <!-- Generated code -->
+  <div class="pg-code-block">
+    <div class="pg-code-header">Generated HTML</div>
+    <pre><code id="pg-code"></code></pre>
+  </div>
+
+</div>
+
+<script type="module">
+  // Resolve the bundle URL that was set at build time
+  const url = document.getElementById('pg-config').dataset.componentUrl;
+
+  try {
+    await import(url);
+  } catch (err) {
+    const errEl = document.getElementById('pg-error');
+    errEl.textContent = `Failed to load component: ${err.message}`;
+    errEl.style.display = 'block';
+    document.getElementById('pg-loading').style.display = 'none';
+    throw err;
+  }
+
+  document.getElementById('pg-loading').style.display = 'none';
+
+  const viz          = document.getElementById('pg-viz');
+  const sizeSelect   = document.getElementById('pg-size');
+  const colorInput   = document.getElementById('pg-color');
+  const barsInput    = document.getElementById('pg-bars');
+  const transInput   = document.getElementById('pg-transition');
+  const transVal     = document.getElementById('pg-trans-val');
+  const deviceSelect = document.getElementById('pg-device');
+  const startBtn     = document.getElementById('pg-start');
+  const stopBtn      = document.getElementById('pg-stop');
+  const errorEl      = document.getElementById('pg-error');
+  const codeEl       = document.getElementById('pg-code');
+
+  // ── Device enumeration ──────────────────────────────────────────────────────
+
+  async function populateDevices() {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const mics = devices.filter(d => d.kind === 'audioinput');
+
+    // Remember the currently selected device so we can restore it.
+    const current = deviceSelect.value;
+
+    // Rebuild the option list (keep the default option first).
+    deviceSelect.innerHTML = '<option value="">Default microphone</option>';
+    mics.forEach((mic, i) => {
+      const opt = document.createElement('option');
+      opt.value = mic.deviceId;
+      // Labels are empty until permission is granted; fall back to a number.
+      opt.textContent = mic.label || `Microphone ${i + 1}`;
+      deviceSelect.appendChild(opt);
+    });
+
+    // Restore previous selection if the device is still present.
+    if (current && [...deviceSelect.options].some(o => o.value === current)) {
+      deviceSelect.value = current;
+    }
+  }
+
+  // Enumerate on load (labels will be empty until permission granted).
+  if (navigator.mediaDevices?.enumerateDevices) {
+    populateDevices();
+    navigator.mediaDevices.addEventListener('devicechange', populateDevices);
+  }
+
+  // ── Viz controls ────────────────────────────────────────────────────────────
+
+  function updateCode() {
+    const size  = sizeSelect.value;
+    const color = colorInput.value;
+    const bars  = barsInput.value;
+    const trans = transInput.value;
+
+    const lines = ['<audio-visualizer'];
+    if (size !== 'md') lines.push(`  size="${size}"`);
+    if (bars !== '5')  lines.push(`  bar-count="${bars}"`);
+
+    const styles = [`--audio-visualizer-color: ${color}`];
+    if (trans !== '100') styles.push(`--audio-visualizer-transition: ${trans}ms`);
+    lines.push(`  style="${styles.join('; ')}"`);
+
+    codeEl.textContent = lines.join('\n') + '\n></audio-visualizer>';
+  }
+
+  function applyToViz() {
+    viz.setAttribute('size', sizeSelect.value);
+    viz.setAttribute('bar-count', barsInput.value);
+    viz.style.setProperty('--audio-visualizer-color', colorInput.value);
+    viz.style.setProperty('--audio-visualizer-transition', transInput.value + 'ms');
+    transVal.textContent = transInput.value;
+    updateCode();
+  }
+
+  sizeSelect.addEventListener('change', applyToViz);
+  colorInput.addEventListener('input',  applyToViz);
+  barsInput .addEventListener('input',  applyToViz);
+  transInput.addEventListener('input',  applyToViz);
+
+  // ── Mic start / stop ────────────────────────────────────────────────────────
+
+  async function startMic() {
+    startBtn.disabled = true;
+    startBtn.textContent = '⏳ Requesting…';
+    errorEl.style.display = 'none';
+
+    const deviceId = deviceSelect.value || undefined;
+
+    try {
+      await viz.startMicrophone(deviceId);
+      // Re-enumerate now that permission is granted — we get real labels.
+      await populateDevices();
+      // Restore the chosen device in the now-relabelled list.
+      if (deviceId) deviceSelect.value = deviceId;
+      startBtn.textContent = '🎙 Mic active';
+      startBtn.classList.add('active');
+      stopBtn.disabled = false;
+    } catch (err) {
+      startBtn.disabled = false;
+      startBtn.textContent = '▶ Start microphone';
+      startBtn.classList.remove('active');
+      errorEl.textContent = err?.message ?? 'Could not access microphone.';
+      errorEl.style.display = 'block';
+    }
+  }
+
+  startBtn.addEventListener('click', startMic);
+
+  stopBtn.addEventListener('click', () => {
+    viz.stopMicrophone();
+    startBtn.disabled = false;
+    startBtn.textContent = '▶ Start microphone';
+    startBtn.classList.remove('active');
+    stopBtn.disabled = true;
+  });
+
+  // Switch device immediately when mic is already active.
+  deviceSelect.addEventListener('change', () => {
+    if (!stopBtn.disabled) startMic();
+  });
+
+  updateCode();
+</script>

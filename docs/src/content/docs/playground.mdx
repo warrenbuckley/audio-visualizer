@@ -1,0 +1,23 @@
+---
+title: Playground
+description: Interactive live demo — adjust size, colour, bar count, and transition speed in real time.
+---
+
+import Playground from '../../components/Playground.astro';
+
+Adjust the controls below and the component updates in real time. The **Generated HTML** snippet at the bottom shows exactly what attributes and styles to copy into your own project.
+
+:::note[Microphone required]
+Click **Start microphone** and grant browser permission to see the bars animate. The component visualises the actual frequency content of your voice — try speaking, snapping, or whistling.
+:::
+
+<Playground />
+
+---
+
+## Try these things
+
+- **Switch sizes** — notice how `icon` and `sm` default to 3 bars, while `md`/`lg`/`xl` default to 5
+- **Change colour** — the bars pick up the CSS custom property instantly, no page reload
+- **Drag the transition slider** — at 20 ms bars snap hard to each frame; at 500 ms the motion is very smooth
+- **Set bar count to 2** — the two bands track bass vs. treble content of your voice
