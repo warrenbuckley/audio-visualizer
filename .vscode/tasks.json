@@ -1,0 +1,41 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    // ── Individual servers ────────────────────────────────────────────────────
+    {
+      "label": "Start component dev server",
+      "type": "shell",
+      "command": "npm run dev",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "label": "Component dev (Vite :5173)",
+        "panel": "dedicated",
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "Start docs site",
+      "type": "shell",
+      "command": "npm run dev --prefix docs",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "label": "Docs site (Astro :4321)",
+        "panel": "dedicated",
+        "reveal": "always"
+      }
+    },
+
+    // ── Compound task — runs both in parallel on folder open ──────────────────
+    {
+      "label": "Start all servers",
+      "dependsOn": ["Start component dev server", "Start docs site"],
+      "dependsOrder": "parallel",
+      "problemMatcher": [],
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    }
+  ]
+}

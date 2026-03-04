@@ -40,7 +40,9 @@
         // Use the workspace TypeScript version rather than VS Code's bundled one.
         "typescript.tsdk": "node_modules/typescript/lib",
         "editor.formatOnSave": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        // Auto-run the "Start all servers" folderOpen task without prompting.
+        "task.allowAutomaticTasks": "on"
       }
     }
   }
