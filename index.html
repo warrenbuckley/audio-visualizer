@@ -3,535 +3,210 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Audio Visualizer</title>
+    <title>audio-visualizer — dev</title>
     <style>
       *, *::before, *::after { box-sizing: border-box; }
 
+      /* ── Colour tokens ──────────────────────────────────────────────────── */
+      :root {
+        --bg:                #0f0f0f;
+        --surface:           #141414;
+        --inset:             #0a0a0a;
+        --border:            #1e1e1e;
+        --text:              #e5e5e5;
+        --text-muted:        #555;
+        --input-bg:          #1a1a1a;
+        --input-border:      #2a2a2a;
+        --input-hover:       #222;
+        --input-hover-border:#333;
+        --active-bg:         #1a1f3a;
+        --active-border:     #3b40a0;
+        --active-text:       #a5b4fc;
+        --error:             #ef4444;
+      }
+
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg:                #ebebeb;
+          --surface:           #ffffff;
+          --inset:             #f0f0f0;
+          --border:            #e0e0e0;
+          --text:              #1a1a1a;
+          --text-muted:        #999;
+          --input-bg:          #f8f8f8;
+          --input-border:      #d0d0d0;
+          --input-hover:       #f0f0f0;
+          --input-hover-border:#bbb;
+          --active-bg:         #eef2ff;
+          --active-border:     #6366f1;
+          --active-text:       #4338ca;
+          --error:             #dc2626;
+        }
+      }
+
+      /* ── Layout ─────────────────────────────────────────────────────────── */
       body {
         margin: 0;
-        padding: 48px 24px 80px;
-        background: #0f0f0f;
-        color: #e5e5e5;
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        padding: 32px 16px;
+        background: var(--bg);
+        color: var(--text);
         font-family: system-ui, sans-serif;
-        line-height: 1.6;
       }
 
-      .page {
-        max-width: 760px;
-        margin: 0 auto;
+      .card {
         display: flex;
         flex-direction: column;
-        gap: 56px;
-      }
-
-      /* ── Header ── */
-      .header { display: flex; flex-direction: column; gap: 8px; }
-      h1 { margin: 0; font-size: 1.75rem; font-weight: 600; color: #f5f5f5; }
-      .subtitle { margin: 0; color: #666; font-size: 0.95rem; }
-
-      /* ── Section ── */
-      section { display: flex; flex-direction: column; gap: 20px; }
-      h2 {
-        margin: 0;
-        font-size: 0.7rem;
-        font-weight: 600;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: #555;
-        padding-bottom: 12px;
-        border-bottom: 1px solid #1e1e1e;
-      }
-
-      /* ── Demo panel ── */
-      .demo-panel {
-        background: #141414;
-        border: 1px solid #1e1e1e;
-        border-radius: 12px;
-        padding: 32px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
         gap: 32px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 40px;
+        /* Wide enough to contain the xl component (384 px bars + label + padding) */
+        width: min(620px, calc(100vw - 32px));
       }
 
-      .visualizers {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 24px;
-        width: 100%;
-      }
-
-      .viz-row {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-      }
-
-      .viz-label {
-        font-size: 0.7rem;
-        color: #444;
-        font-family: monospace;
-        width: 32px;
-        text-align: right;
-        flex-shrink: 0;
-      }
-
-      .color-row {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        justify-content: center;
-        width: 100%;
-        padding-top: 8px;
-        border-top: 1px solid #1e1e1e;
-      }
-
-      /* ── Controls ── */
+      /* ── Mic controls ───────────────────────────────────────────────────── */
       .controls {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        gap: 14px;
-        width: 100%;
-      }
-
-      .controls-row {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      button {
-        padding: 9px 20px;
-        border: 1px solid #2a2a2a;
-        border-radius: 8px;
-        background: #1a1a1a;
-        color: #e5e5e5;
-        font-size: 0.875rem;
-        cursor: pointer;
-        transition: background 150ms ease, border-color 150ms ease;
-        white-space: nowrap;
-      }
-      button:hover { background: #222; border-color: #333; }
-      button:disabled { opacity: 0.4; cursor: not-allowed; }
-      button.active {
-        background: #1a1f3a;
-        border-color: #3b40a0;
-        color: #a5b4fc;
+        gap: 10px;
       }
 
       select {
+        width: 100%;
         padding: 9px 12px;
-        border: 1px solid #2a2a2a;
+        border: 1px solid var(--input-border);
         border-radius: 8px;
-        background: #1a1a1a;
-        color: #e5e5e5;
+        background: var(--input-bg);
+        color: var(--text);
         font-size: 0.875rem;
         cursor: pointer;
-        max-width: 260px;
       }
-      select:disabled { opacity: 0.4; cursor: not-allowed; }
 
-      .device-label {
+      .btn-row {
+        display: flex;
+        gap: 10px;
+      }
+
+      button {
+        flex: 1;
+        padding: 10px 0;
+        border: 1px solid var(--input-border);
+        border-radius: 8px;
+        background: var(--input-bg);
+        color: var(--text);
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: background 120ms, border-color 120ms;
+      }
+      button:hover:not(:disabled) {
+        background: var(--input-hover);
+        border-color: var(--input-hover-border);
+      }
+      button:disabled { opacity: 0.35; cursor: not-allowed; }
+      button.active {
+        background: var(--active-bg);
+        border-color: var(--active-border);
+        color: var(--active-text);
+      }
+
+      .error {
+        color: var(--error);
         font-size: 0.8rem;
-        color: #555;
+        margin: 0;
+        min-height: 1.2em;
       }
 
-      .error { color: #ef4444; font-size: 0.85rem; text-align: center; }
-      .hint  { color: #444; font-size: 0.75rem; text-align: center; margin: 0; }
-
-      /* ── Styling approach grid ── */
-      .approach-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-      }
-      @media (max-width: 640px) {
-        .approach-grid { grid-template-columns: 1fr; }
-      }
-      .approach-card {
-        background: #141414;
-        border: 1px solid #1e1e1e;
-        border-radius: 10px;
-        overflow: hidden;
+      /* ── Size rows ──────────────────────────────────────────────────────── */
+      .sizes {
         display: flex;
         flex-direction: column;
+        gap: 16px;
       }
-      .approach-header {
-        padding: 8px 16px;
-        background: #111;
-        border-bottom: 1px solid #1e1e1e;
-        font-size: 0.7rem;
-        color: #555;
-        font-family: monospace;
-        font-weight: 600;
-        letter-spacing: 0.04em;
-      }
-      .approach-preview {
+
+      .size-row {
         display: flex;
         align-items: center;
-        justify-content: center;
-        padding: 20px 16px;
-        border-bottom: 1px solid #1e1e1e;
-        background: #0f0f0f;
-      }
-      .approach-code {
-        margin: 0;
-        padding: 14px 16px;
-        font-size: 0.76rem;
-        line-height: 1.65;
-        font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
-        flex: 1;
-      }
-
-      /* ── Code blocks ── */
-      .code-block {
-        background: #141414;
-        border: 1px solid #1e1e1e;
+        gap: 20px;
+        padding: 20px 24px;
+        background: var(--inset);
+        border: 1px solid var(--border);
         border-radius: 10px;
-        overflow: hidden;
       }
 
-      .code-label {
-        padding: 8px 16px;
+      .size-label {
         font-size: 0.7rem;
-        color: #444;
         font-family: monospace;
-        border-bottom: 1px solid #1e1e1e;
-        background: #111;
+        color: var(--text-muted);
+        width: 28px;
+        flex-shrink: 0;
       }
-
-      pre {
-        margin: 0;
-        padding: 20px;
-        overflow-x: auto;
-        font-size: 0.82rem;
-        line-height: 1.7;
-        font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
-      }
-
-      code { color: #c9d1d9; }
-
-      /* Minimal token colours */
-      .t-tag    { color: #7ee787; }
-      .t-attr   { color: #79c0ff; }
-      .t-val    { color: #a5d6ff; }
-      .t-kw     { color: #ff7b72; }
-      .t-fn     { color: #d2a8ff; }
-      .t-str    { color: #a5d6ff; }
-      .t-cmt    { color: #484f58; font-style: italic; }
-      .t-num    { color: #f2cc60; }
-
-      /* ── Props table ── */
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.85rem;
-        background: #141414;
-        border: 1px solid #1e1e1e;
-        border-radius: 10px;
-        overflow: hidden;
-      }
-      th {
-        text-align: left;
-        padding: 10px 16px;
-        background: #111;
-        color: #555;
-        font-size: 0.7rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        border-bottom: 1px solid #1e1e1e;
-      }
-      td {
-        padding: 10px 16px;
-        border-bottom: 1px solid #1a1a1a;
-        color: #aaa;
-        vertical-align: top;
-      }
-      tr:last-child td { border-bottom: none; }
-      td code {
-        font-family: monospace;
-        font-size: 0.8rem;
-        color: #79c0ff;
-        background: #1a1a2e;
-        padding: 1px 5px;
-        border-radius: 4px;
-      }
-      td:first-child code { color: #7ee787; background: #0d1f12; }
     </style>
     <script type="module" src="/src/main.ts"></script>
   </head>
   <body>
-    <div class="page">
+    <div class="card">
 
-      <!-- Header -->
-      <div class="header">
-        <h1>Audio Visualizer</h1>
-        <p class="subtitle">A Lit WebComponent that displays real-time microphone frequency bands as animated bars.</p>
+      <h1>audio-visualizer</h1>
+
+      <!-- Microphone controls sit above the visualizers -->
+      <div class="controls">
+        <select id="device-select">
+          <option value="">Default microphone</option>
+        </select>
+
+        <div class="btn-row">
+          <button id="btn-start">▶ Start microphone</button>
+          <button id="btn-stop" disabled>⏹ Stop</button>
+        </div>
+
+        <p id="error-msg" class="error"></p>
       </div>
 
-      <!-- Live Demo -->
-      <section>
-        <h2>Live Demo</h2>
-        <div class="demo-panel">
-          <div class="visualizers">
-            <div class="viz-row">
-              <span class="viz-label">icon</span>
-              <audio-visualizer id="viz-icon" size="icon" color="#6366f1"></audio-visualizer>
-            </div>
-            <div class="viz-row">
-              <span class="viz-label">sm</span>
-              <audio-visualizer id="viz-sm" size="sm" color="#6366f1"></audio-visualizer>
-            </div>
-            <div class="viz-row">
-              <span class="viz-label">md</span>
-              <audio-visualizer id="viz-md" size="md" color="#6366f1"></audio-visualizer>
-            </div>
-            <div class="viz-row">
-              <span class="viz-label">lg</span>
-              <audio-visualizer id="viz-lg" size="lg" color="#6366f1"></audio-visualizer>
-            </div>
-          </div>
-
-          <div class="color-row">
-            <audio-visualizer id="c1" size="sm" bar-count="5" style="--audio-visualizer-color: #6366f1"></audio-visualizer>
-            <audio-visualizer id="c2" size="sm" bar-count="5" style="--audio-visualizer-color: #ec4899"></audio-visualizer>
-            <audio-visualizer id="c3" size="sm" bar-count="5" style="--audio-visualizer-color: #10b981"></audio-visualizer>
-            <audio-visualizer id="c4" size="sm" bar-count="5" style="--audio-visualizer-color: #f59e0b"></audio-visualizer>
-            <audio-visualizer id="c5" size="sm" bar-count="5" style="--audio-visualizer-color: #e5e5e5"></audio-visualizer>
-          </div>
-
-          <div class="controls">
-            <div class="controls-row">
-              <button id="start-btn">Start Microphone</button>
-              <select id="device-select" disabled title="Start microphone to see available devices">
-                <option value="">Default microphone</option>
-              </select>
-            </div>
-            <p id="error-msg" class="error" style="display:none;margin:0;"></p>
-            <p class="hint">Grant microphone permission to animate the bars</p>
-          </div>
+      <!-- All sizes share the same mic stream, each with its own colour -->
+      <div class="sizes">
+        <div class="size-row">
+          <span class="size-label">icon</span>
+          <audio-visualizer id="viz-icon" size="icon" color="#6366f1"></audio-visualizer>
         </div>
-      </section>
-
-      <!-- Usage -->
-      <section>
-        <h2>Usage</h2>
-
-        <div class="code-block">
-          <div class="code-label">html</div>
-          <pre><code><span class="t-cmt">&lt;!-- Import the component --&gt;</span>
-<span class="t-tag">&lt;script</span> <span class="t-attr">type</span>=<span class="t-val">"module"</span> <span class="t-attr">src</span>=<span class="t-val">"/src/main.ts"</span><span class="t-tag">&gt;&lt;/script&gt;</span>
-
-<span class="t-cmt">&lt;!-- Place the element --&gt;</span>
-<span class="t-tag">&lt;audio-visualizer</span>
-  <span class="t-attr">size</span>=<span class="t-val">"md"</span>
-  <span class="t-attr">color</span>=<span class="t-val">"#6366f1"</span>
-  <span class="t-attr">bar-count</span>=<span class="t-val">"5"</span>
-<span class="t-tag">&gt;&lt;/audio-visualizer&gt;</span></code></pre>
+        <div class="size-row">
+          <span class="size-label">sm</span>
+          <audio-visualizer id="viz-sm" size="sm" color="#ec4899"></audio-visualizer>
         </div>
-
-        <div class="code-block">
-          <div class="code-label">javascript — start microphone</div>
-          <pre><code><span class="t-cmt">// Must be called from a user gesture (click) to satisfy</span>
-<span class="t-cmt">// browser autoplay policy and trigger the permission prompt.</span>
-<span class="t-kw">const</span> viz = document.<span class="t-fn">querySelector</span>(<span class="t-str">'audio-visualizer'</span>);
-
-button.<span class="t-fn">addEventListener</span>(<span class="t-str">'click'</span>, <span class="t-kw">async</span> () =&gt; {
-  <span class="t-kw">await</span> viz.<span class="t-fn">startMicrophone</span>();
-});</code></pre>
+        <div class="size-row">
+          <span class="size-label">md</span>
+          <audio-visualizer id="viz-md" size="md" color="#10b981"></audio-visualizer>
         </div>
-
-        <div class="code-block">
-          <div class="code-label">javascript — stop microphone</div>
-          <pre><code>viz.<span class="t-fn">stopMicrophone</span>(); <span class="t-cmt">// Releases the mic stream immediately</span></code></pre>
+        <div class="size-row">
+          <span class="size-label">lg</span>
+          <audio-visualizer id="viz-lg" size="lg" color="#f59e0b"></audio-visualizer>
         </div>
-      </section>
-
-      <!-- Styling -->
-      <section>
-        <h2>Styling</h2>
-
-        <!-- Three approach cards -->
-        <div class="approach-grid">
-
-          <div class="approach-card">
-            <div class="approach-header">CSS custom property</div>
-            <div class="approach-preview">
-              <audio-visualizer size="sm" bar-count="5" style="--audio-visualizer-color: #6366f1"></audio-visualizer>
-            </div>
-            <pre class="approach-code"><code><span class="t-cmt">/* preferred — keeps colour in CSS */</span>
-<span class="t-tag">audio-visualizer</span> {
-  <span class="t-attr">--audio-visualizer-color</span>: <span class="t-val">#6366f1</span>;
-  <span class="t-attr">--audio-visualizer-transition</span>: <span class="t-val">60ms</span>;
-}</code></pre>
-          </div>
-
-          <div class="approach-card">
-            <div class="approach-header">CSS inheritance</div>
-            <div class="approach-preview">
-              <div style="color: #ec4899">
-                <audio-visualizer size="sm" bar-count="5"></audio-visualizer>
-              </div>
-            </div>
-            <pre class="approach-code"><code><span class="t-cmt">/* bars pick up the CSS color property */</span>
-<span class="t-tag">&lt;div</span> <span class="t-attr">style</span>=<span class="t-val">"color: #ec4899"</span><span class="t-tag">&gt;</span>
-  <span class="t-tag">&lt;audio-visualizer&gt;</span>
-  <span class="t-tag">&lt;/audio-visualizer&gt;</span>
-<span class="t-tag">&lt;/div&gt;</span></code></pre>
-          </div>
-
-          <div class="approach-card">
-            <div class="approach-header">HTML attribute</div>
-            <div class="approach-preview">
-              <audio-visualizer size="sm" bar-count="5" color="#10b981"></audio-visualizer>
-            </div>
-            <pre class="approach-code"><code><span class="t-cmt">/* quick, inline convenience */</span>
-<span class="t-tag">&lt;audio-visualizer</span>
-  <span class="t-attr">color</span>=<span class="t-val">"#10b981"</span>
-<span class="t-tag">&gt;&lt;/audio-visualizer&gt;</span></code></pre>
-          </div>
-
+        <div class="size-row">
+          <span class="size-label">xl</span>
+          <audio-visualizer id="viz-xl" size="xl" color="#06b6d4"></audio-visualizer>
         </div>
+      </div>
 
-        <!-- CSS custom properties reference -->
-        <table>
-          <thead>
-            <tr>
-              <th>CSS Custom Property</th>
-              <th>Default</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>--audio-visualizer-color</code></td>
-              <td><code>currentColor</code></td>
-              <td>Bar colour. Takes priority over the <code>color</code> attribute. Falls back to the inherited CSS <code>color</code> property when unset.</td>
-            </tr>
-            <tr>
-              <td><code>--audio-visualizer-transition</code></td>
-              <td><code>100ms</code></td>
-              <td>Duration of bar height transitions. Lower = snappier response; higher = smoother, slower animation.</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <!-- Transition speed code example -->
-        <div class="code-block">
-          <div class="code-label">html — transition speed</div>
-          <pre><code><span class="t-cmt">&lt;!-- Snappy --&gt;</span>
-<span class="t-tag">&lt;audio-visualizer</span> <span class="t-attr">style</span>=<span class="t-val">"--audio-visualizer-transition: 40ms"</span><span class="t-tag">&gt;&lt;/audio-visualizer&gt;</span>
-
-<span class="t-cmt">&lt;!-- Smooth --&gt;</span>
-<span class="t-tag">&lt;audio-visualizer</span> <span class="t-attr">style</span>=<span class="t-val">"--audio-visualizer-transition: 250ms"</span><span class="t-tag">&gt;&lt;/audio-visualizer&gt;</span></code></pre>
-        </div>
-      </section>
-
-      <!-- Device Switching -->
-      <section>
-        <h2>Device Switching</h2>
-        <div class="code-block">
-          <div class="code-label">javascript</div>
-          <pre><code><span class="t-cmt">// Enumerate audio input devices (requires mic permission first)</span>
-<span class="t-kw">const</span> devices = <span class="t-kw">await</span> navigator.mediaDevices.<span class="t-fn">enumerateDevices</span>();
-<span class="t-kw">const</span> mics = devices.<span class="t-fn">filter</span>(d =&gt; d.kind === <span class="t-str">'audioinput'</span>);
-
-<span class="t-cmt">// Pass a deviceId to use a specific microphone.</span>
-<span class="t-cmt">// Calling startMicrophone() again stops the current stream first.</span>
-select.<span class="t-fn">addEventListener</span>(<span class="t-str">'change'</span>, <span class="t-kw">async</span> () =&gt; {
-  <span class="t-kw">await</span> viz.<span class="t-fn">startMicrophone</span>(select.value || <span class="t-kw">undefined</span>);
-});</code></pre>
-        </div>
-      </section>
-
-      <!-- Props -->
-      <section>
-        <h2>Props</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Attribute</th>
-              <th>Type</th>
-              <th>Default</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>size</code></td>
-              <td><code>'icon' | 'sm' | 'md' | 'lg' | 'xl'</code></td>
-              <td><code>'md'</code></td>
-              <td>Controls bar width, container height, and gap between bars.</td>
-            </tr>
-            <tr>
-              <td><code>color</code></td>
-              <td><code>string</code> (any CSS color)</td>
-              <td>inherits</td>
-              <td>Bar fill color. Convenience attribute — prefer <code>--audio-visualizer-color</code> for stylesheet theming.</td>
-            </tr>
-            <tr>
-              <td><code>bar-count</code></td>
-              <td><code>number</code></td>
-              <td><code>3</code> or <code>5</code></td>
-              <td>Number of frequency bands shown. Defaults to 3 for <code>icon</code>/<code>sm</code>, 5 for larger sizes.</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Method</th>
-              <th>Signature</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>startMicrophone</code></td>
-              <td><code>(deviceId?: string) =&gt; Promise&lt;void&gt;</code></td>
-              <td>Requests mic access and starts the animation. Restarts automatically if already active.</td>
-            </tr>
-            <tr>
-              <td><code>stopMicrophone</code></td>
-              <td><code>() =&gt; void</code></td>
-              <td>Stops the animation loop and releases the microphone stream.</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <!-- Sizes -->
-      <section>
-        <h2>Size Variants</h2>
-        <div class="code-block">
-          <div class="code-label">html</div>
-          <pre><code><span class="t-tag">&lt;audio-visualizer</span> <span class="t-attr">size</span>=<span class="t-val">"icon"</span><span class="t-tag">&gt;&lt;/audio-visualizer&gt;</span>  <span class="t-cmt">&lt;!-- 24px tall,  4px bars, 3 bars --&gt;</span>
-<span class="t-tag">&lt;audio-visualizer</span> <span class="t-attr">size</span>=<span class="t-val">"sm"</span>  <span class="t-tag">&gt;&lt;/audio-visualizer&gt;</span>  <span class="t-cmt">&lt;!-- 56px tall,  8px bars, 3 bars --&gt;</span>
-<span class="t-tag">&lt;audio-visualizer</span> <span class="t-attr">size</span>=<span class="t-val">"md"</span>  <span class="t-tag">&gt;&lt;/audio-visualizer&gt;</span>  <span class="t-cmt">&lt;!-- 112px tall, 16px bars, 5 bars --&gt;</span>
-<span class="t-tag">&lt;audio-visualizer</span> <span class="t-attr">size</span>=<span class="t-val">"lg"</span>  <span class="t-tag">&gt;&lt;/audio-visualizer&gt;</span>  <span class="t-cmt">&lt;!-- 224px tall, 32px bars, 5 bars --&gt;</span>
-<span class="t-tag">&lt;audio-visualizer</span> <span class="t-attr">size</span>=<span class="t-val">"xl"</span>  <span class="t-tag">&gt;&lt;/audio-visualizer&gt;</span>  <span class="t-cmt">&lt;!-- 448px tall, 64px bars, 5 bars --&gt;</span></code></pre>
-        </div>
-      </section>
-
-    </div><!-- /page -->
+    </div>
 
     <script type="module">
-      const btn        = document.getElementById('start-btn');
-      const errMsg     = document.getElementById('error-msg');
-      const deviceSel  = document.getElementById('device-select');
+      const ALL_VIZ = ['viz-icon', 'viz-sm', 'viz-md', 'viz-lg', 'viz-xl'];
 
-      const ALL_VIZ = ['viz-icon', 'viz-sm', 'viz-md', 'viz-lg', 'c1', 'c2', 'c3', 'c4', 'c5'];
+      const btnStart  = document.getElementById('btn-start');
+      const btnStop   = document.getElementById('btn-stop');
+      const deviceSel = document.getElementById('device-select');
+      const errorMsg  = document.getElementById('error-msg');
+
+      // ── Device enumeration ──────────────────────────────────────────────────
 
       async function populateDevices() {
         const devices = await navigator.mediaDevices.enumerateDevices();
         const mics = devices.filter(d => d.kind === 'audioinput');
+        const current = deviceSel.value;
 
-        // Clear all options except the default
         deviceSel.innerHTML = '<option value="">Default microphone</option>';
         mics.forEach((mic, i) => {
           const opt = document.createElement('option');
@@ -539,39 +214,55 @@ select.<span class="t-fn">addEventListener</span>(<span class="t-str">'change'</
           opt.textContent = mic.label || `Microphone ${i + 1}`;
           deviceSel.appendChild(opt);
         });
-        deviceSel.disabled = false;
+
+        if (current && [...deviceSel.options].some(o => o.value === current)) {
+          deviceSel.value = current;
+        }
       }
+
+      if (navigator.mediaDevices?.enumerateDevices) {
+        populateDevices();
+        navigator.mediaDevices.addEventListener('devicechange', populateDevices);
+      }
+
+      // ── Start / stop ────────────────────────────────────────────────────────
 
       async function startAll(deviceId) {
         for (const id of ALL_VIZ) {
-          const el = document.getElementById(id);
-          if (el) await el.startMicrophone(deviceId || undefined);
+          await document.getElementById(id)?.startMicrophone(deviceId || undefined);
         }
       }
 
-      btn.addEventListener('click', async () => {
-        btn.disabled = true;
-        btn.textContent = 'Starting…';
-        errMsg.style.display = 'none';
+      btnStart.addEventListener('click', async () => {
+        btnStart.disabled = true;
+        btnStart.textContent = '⏳ Requesting…';
+        errorMsg.textContent = '';
 
         try {
           await startAll(deviceSel.value);
-          btn.textContent = 'Microphone active';
-          btn.classList.add('active');
           await populateDevices();
+          btnStart.textContent = '🎙 Mic active';
+          btnStart.classList.add('active');
+          btnStop.disabled = false;
         } catch (err) {
-          btn.disabled = false;
-          btn.textContent = 'Start Microphone';
-          btn.classList.remove('active');
-          errMsg.textContent = err?.message ?? 'Could not access microphone.';
-          errMsg.style.display = 'block';
+          btnStart.disabled = false;
+          btnStart.textContent = '▶ Start microphone';
+          btnStart.classList.remove('active');
+          errorMsg.textContent = err?.message ?? 'Could not access microphone.';
         }
       });
 
-      deviceSel.addEventListener('change', async () => {
-        if (btn.classList.contains('active')) {
-          await startAll(deviceSel.value);
-        }
+      btnStop.addEventListener('click', () => {
+        ALL_VIZ.forEach(id => document.getElementById(id)?.stopMicrophone());
+        btnStart.disabled = false;
+        btnStart.textContent = '▶ Start microphone';
+        btnStart.classList.remove('active');
+        btnStop.disabled = true;
+      });
+
+      // Switch device while active
+      deviceSel.addEventListener('change', () => {
+        if (btnStart.classList.contains('active')) startAll(deviceSel.value);
       });
     </script>
   </body>
