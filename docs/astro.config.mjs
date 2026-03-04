@@ -9,6 +9,8 @@ import catppuccin from '@catppuccin/starlight';
 export default defineConfig({
   site: 'https://warrenbuckley.github.io',
   base: '/audio-visualizer',
+  // Bind to all interfaces so GitHub Codespaces port forwarding works.
+  server: { host: true },
   integrations: [
     starlight({
       title: '<audio-visualizer>',

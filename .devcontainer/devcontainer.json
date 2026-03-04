@@ -1,0 +1,45 @@
+{
+  "name": "audio-visualizer",
+
+  // Node.js 22 LTS — matches the runtime used locally.
+  "image": "mcr.microsoft.com/devcontainers/node:1-22",
+
+  // Forward both dev servers so the browser preview links appear automatically.
+  "forwardPorts": [5173, 4321],
+  "portsAttributes": {
+    "5173": {
+      "label": "Component dev (Vite)",
+      "onAutoForward": "notify"
+    },
+    "4321": {
+      "label": "Docs site (Astro)",
+      "onAutoForward": "notify"
+    }
+  },
+
+  // After the container is created:
+  //   1. Install root dependencies (Vite, Lit, TypeScript, …)
+  //   2. Install docs dependencies (Astro, Starlight, Catppuccin, …)
+  //   3. Build the standalone bundle so the docs playground can serve it
+  "postCreateCommand": "npm install && npm install --prefix docs && npm run build:standalone",
+
+  "customizations": {
+    "vscode": {
+      // Extensions are also listed in .vscode/extensions.json for local VS Code users.
+      "extensions": [
+        // Lit template-literal type-checking and highlighting
+        "runem.lit-plugin",
+        // Astro language support (.astro files, component props, etc.)
+        "astro-build.astro-vscode",
+        // Prettier formatter
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        // Use the workspace TypeScript version rather than VS Code's bundled one.
+        "typescript.tsdk": "node_modules/typescript/lib",
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+      }
+    }
+  }
+}

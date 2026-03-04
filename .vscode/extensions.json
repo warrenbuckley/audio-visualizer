@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    // Lit template-literal type-checking and highlighting
+    "runem.lit-plugin",
+    // Astro language support (.astro files, component props, etc.)
+    "astro-build.astro-vscode",
+    // Prettier formatter
+    "esbenp.prettier-vscode"
+  ]
+}
