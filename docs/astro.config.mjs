@@ -53,6 +53,12 @@ export default defineConfig({
           ],
         },
         {
+          label: 'Concepts',
+          items: [
+            { label: 'Architecture', slug: 'concepts/architecture' },
+          ],
+        },
+        {
           label: 'Reference',
           items: [
             { label: 'API Reference', slug: 'reference/api'     },
