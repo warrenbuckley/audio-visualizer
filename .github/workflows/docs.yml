@@ -28,8 +28,8 @@ jobs:
           cache: npm
 
       # Regenerate custom-elements.json so the API reference is always current
-      - name: Install root deps & regenerate CEM
-        run: npm ci && npm run build:cem
+      - name: Install root deps & build component
+        run: npm ci && npm run build:standalone && npm run build:cem
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v4
