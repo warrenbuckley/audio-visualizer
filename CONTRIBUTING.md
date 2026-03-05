@@ -23,7 +23,6 @@ audio-visualizer/
 ├── custom-elements.json          # Custom Elements Manifest (tooling + discovery)
 ├── package.json
 ├── tsconfig.json
-├── cem.config.mjs                # @custom-elements-manifest/analyzer config
 ├── vite.config.ts                # Dev server config
 ├── vite.lib.config.ts            # Library build — Lit external
 └── vite.standalone.config.ts     # Standalone build — Lit bundled in
