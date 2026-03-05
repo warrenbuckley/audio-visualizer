@@ -1,0 +1,10 @@
+{
+  "name": "audio-visualizer-html-example",
+  "description": "Plain HTML example for audio-visualizer — used by the StackBlitz demo.",
+  "scripts": {
+    "start": "servor . --reload"
+  },
+  "dependencies": {
+    "servor": "^4.0.2"
+  }
+}
