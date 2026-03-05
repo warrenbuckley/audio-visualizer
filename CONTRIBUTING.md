@@ -24,7 +24,6 @@ audio-visualizer/
 ├── package.json
 ├── tsconfig.json
 ├── cem.config.mjs                # @custom-elements-manifest/analyzer config
-├── jsr.json                      # JSR registry config
 ├── vite.config.ts                # Dev server config
 ├── vite.lib.config.ts            # Library build — Lit external
 └── vite.standalone.config.ts     # Standalone build — Lit bundled in
@@ -77,7 +76,6 @@ npm run dev --prefix docs
 | `npm run build:standalone` | Build the self-contained CDN bundle to `dist/` (Lit bundled in) |
 | `npm run build:cem` | Regenerate `custom-elements.json` |
 | `npm run preview` | Serve the Vite build locally |
-| `npm run publish:jsr` | Publish the package to JSR |
 
 ---
 
@@ -120,17 +118,6 @@ npm publish
 ```
 
 The `"files"` field in `package.json` includes `dist/` and `custom-elements.json` — both bundles and the manifest are published automatically.
-
-### JSR
-
-JSR publishes the TypeScript source directly — no build step required:
-
-```bash
-npm run publish:jsr
-# runs: npx jsr publish --allow-slow-types
-```
-
-`--allow-slow-types` is needed because Lit's `LitElement` base class lives on npm rather than JSR. JSR's fast type-inference checker cannot fully resolve cross-registry class hierarchies, but the types are correct and complete for consumers.
 
 ### GitHub Release
 
