@@ -110,6 +110,123 @@ Run `npm run build:cem` after changing any public attribute, property, method, o
 
 ## Publishing
 
+### Pre-publish verification
+
+Run through this checklist before every `npm publish` to catch issues before they reach consumers.
+
+**1. Clean rebuild**
+
+```bash
+rm -rf dist/
+npm run build:lib
+npm run build:standalone
+```
+
+Expected output in `dist/`: `audio-visualizer.js`, `.d.ts`, `.js.map`, `audio-visualizer.standalone.js`, `.standalone.js.map`.
+
+**2. Regenerate the CEM** (if the public API changed)
+
+```bash
+npm run build:cem
+```
+
+Open `custom-elements.json` and confirm it reflects the current attributes, methods, and CSS custom properties.
+
+**3. Audit**
+
+```bash
+npm audit
+```
+
+Must report `0 vulnerabilities`.
+
+**4. Inspect the tarball**
+
+```bash
+npm pack --dry-run
+```
+
+Verify exactly these 10 files are listed — nothing extra (`src/`, `docs/`, `node_modules/`), nothing missing (`LICENSE`, `NOTICE`, `README.md`):
+
+```
+LICENSE · NOTICE · README.md · custom-elements.json
+dist/audio-visualizer.js · .d.ts · .js.map
+dist/audio-visualizer.standalone.js · .standalone.js.map
+package.json
+```
+
+**5. Local install test**
+
+Pack the tarball and install it into a fresh project to test as a real consumer would:
+
+```bash
+# In the repo root — creates audio-visualizer-x.x.x.tgz
+npm pack
+
+# In a separate directory
+mkdir ~/test-audio-visualizer && cd ~/test-audio-visualizer
+npm init -y
+npm install lit
+npm install /full/path/to/audio-visualizer-1.0.0.tgz
+```
+
+Create `test.mjs` and verify exports resolve:
+
+```js
+import { AudioVisualizer, AudioAnalyzer } from 'audio-visualizer';
+console.log(AudioVisualizer.name);  // → "AudioVisualizer"
+console.log(AudioAnalyzer.name);    // → "AudioAnalyzer"
+```
+
+```bash
+node test.mjs
+```
+
+**6. Verify TypeScript types**
+
+In the test project, create `test.ts`:
+
+```ts
+import { AudioVisualizer, type VisualizerSize } from 'audio-visualizer';
+const size: VisualizerSize = 'md';
+const el = document.createElement('audio-visualizer') as AudioVisualizer;
+el.startMicrophone();
+```
+
+```bash
+npx tsc --noEmit --strict test.ts
+```
+
+Should compile with no errors.
+
+**7. Verify Lit is not duplicated**
+
+```bash
+ls node_modules/audio-visualizer/node_modules/
+```
+
+This directory should not exist. If `lit` appears inside it, Lit has leaked in as a hard dependency and consumers will get a duplicate — check that `lit` is not in `dependencies` in `package.json`.
+
+**8. Verify the standalone build in a browser**
+
+Serve `dist/audio-visualizer.standalone.js` from a static server and open a plain HTML page:
+
+```html
+<script type="module" src="./dist/audio-visualizer.standalone.js"></script>
+<audio-visualizer id="viz" size="md" style="--audio-visualizer-color: #6366f1"></audio-visualizer>
+<button onclick="document.getElementById('viz').startMicrophone()">Start</button>
+```
+
+Confirm the component renders and responds to mic input over `localhost`.
+
+**9. Full dry-run**
+
+```bash
+npm publish --dry-run
+```
+
+Runs the full publish pipeline without uploading. Verify the package name, version, and file list are all correct.
+
 ### npm
 
 ```bash
