@@ -14,12 +14,6 @@ Ported from LiveKit's [`AgentAudioVisualizerBar`](https://docs.livekit.io/refere
 npm install audio-visualizer lit
 ```
 
-**JSR**
-
-```bash
-npx jsr add @warrenbuckley/audio-visualizer
-```
-
 **CDN (no install)**
 
 ```html
