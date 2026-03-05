@@ -17,7 +17,7 @@ description: Using audio-visualizer in plain HTML — CDN or local file.
     <button id="stop" disabled>Stop</button>
 
     <script type="module"
-      src="https://cdn.jsdelivr.net/npm/audio-visualizer/dist/audio-visualizer.standalone.js">
+      src="https://cdn.jsdelivr.net/npm/@warrenbuckley/audio-visualizer/dist/audio-visualizer.standalone.js">
     </script>
 
     <script type="module">

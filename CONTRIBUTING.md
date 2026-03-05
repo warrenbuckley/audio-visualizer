@@ -160,20 +160,20 @@ package.json
 Pack the tarball and install it into a fresh project to test as a real consumer would:
 
 ```bash
-# In the repo root — creates audio-visualizer-x.x.x.tgz
+# In the repo root — creates warrenbuckley-audio-visualizer-x.x.x.tgz
 npm pack
 
 # In a separate directory
 mkdir ~/test-audio-visualizer && cd ~/test-audio-visualizer
 npm init -y
 npm install lit
-npm install /full/path/to/audio-visualizer-1.0.0.tgz
+npm install /full/path/to/warrenbuckley-audio-visualizer-1.0.0.tgz
 ```
 
 Create `test.mjs` and verify exports resolve:
 
 ```js
-import { AudioVisualizer, AudioAnalyzer } from 'audio-visualizer';
+import { AudioVisualizer, AudioAnalyzer } from '@warrenbuckley/audio-visualizer';
 console.log(AudioVisualizer.name);  // → "AudioVisualizer"
 console.log(AudioAnalyzer.name);    // → "AudioAnalyzer"
 ```
@@ -187,7 +187,7 @@ node test.mjs
 In the test project, create `test.ts`:
 
 ```ts
-import { AudioVisualizer, type VisualizerSize } from 'audio-visualizer';
+import { AudioVisualizer, type VisualizerSize } from '@warrenbuckley/audio-visualizer';
 const size: VisualizerSize = 'md';
 const el = document.createElement('audio-visualizer') as AudioVisualizer;
 el.startMicrophone();
@@ -202,10 +202,12 @@ Should compile with no errors.
 **7. Verify Lit is not duplicated**
 
 ```bash
-ls node_modules/audio-visualizer/node_modules/
+ls node_modules/@warrenbuckley/audio-visualizer/node_modules/
 ```
 
 This directory should not exist. If `lit` appears inside it, Lit has leaked in as a hard dependency and consumers will get a duplicate — check that `lit` is not in `dependencies` in `package.json`.
+
+> **Note:** npm strips the `@` and replaces `/` with `-` in tarball filenames, so the scoped package `@warrenbuckley/audio-visualizer` produces `warrenbuckley-audio-visualizer-x.x.x.tgz`.
 
 **8. Verify the standalone build in a browser**
 
@@ -222,7 +224,7 @@ Confirm the component renders and responds to mic input over `localhost`.
 **9. Full dry-run**
 
 ```bash
-npm publish --dry-run
+npm publish --access=public --dry-run
 ```
 
 Runs the full publish pipeline without uploading. Verify the package name, version, and file list are all correct.
@@ -233,7 +235,7 @@ Runs the full publish pipeline without uploading. Verify the package name, versi
 npm run build:lib
 npm run build:standalone
 npm run build:cem
-npm publish
+npm publish --access=public
 ```
 
 The `"files"` field in `package.json` includes `dist/` and `custom-elements.json` — both bundles and the manifest are published automatically.

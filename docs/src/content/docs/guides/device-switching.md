@@ -12,7 +12,7 @@ Browser security prevents enumerating device labels until the user has granted m
 ## Full example
 
 ```ts
-import 'audio-visualizer';
+import '@warrenbuckley/audio-visualizer';
 
 const viz    = document.querySelector('audio-visualizer')!;
 const select = document.querySelector('select')! as HTMLSelectElement;

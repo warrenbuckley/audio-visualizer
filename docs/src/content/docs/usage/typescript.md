@@ -5,23 +5,23 @@ description: Using audio-visualizer with TypeScript or plain JavaScript in a bun
 
 ## Setup
 
-After installing (`npm install audio-visualizer lit`), import once to register the element globally:
+After installing (`npm install @warrenbuckley/audio-visualizer lit`), import once to register the element globally:
 
 ```ts
-import 'audio-visualizer';
+import '@warrenbuckley/audio-visualizer';
 ```
 
 To get the typed class for casting and autocompletion, import `AudioVisualizer`:
 
 ```ts
-import { AudioVisualizer, type VisualizerSize } from 'audio-visualizer';
+import { AudioVisualizer, type VisualizerSize } from '@warrenbuckley/audio-visualizer';
 ```
 
 ## Full example
 
 ```ts
-import 'audio-visualizer';
-import type { AudioVisualizer } from 'audio-visualizer';
+import '@warrenbuckley/audio-visualizer';
+import type { AudioVisualizer } from '@warrenbuckley/audio-visualizer';
 
 const viz        = document.querySelector('audio-visualizer') as AudioVisualizer;
 const startBtn   = document.getElementById('start')  as HTMLButtonElement;

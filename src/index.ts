@@ -15,13 +15,13 @@
  *
  * @example <caption>Side-effect import (HTML-only usage)</caption>
  * ```ts
- * import 'audio-visualizer';
+ * import '@warrenbuckley/audio-visualizer';
  * // <audio-visualizer> is now a valid custom element
  * ```
  *
  * @example <caption>Named import (typed API access)</caption>
  * ```ts
- * import { AudioVisualizer, type VisualizerSize } from 'audio-visualizer';
+ * import { AudioVisualizer, type VisualizerSize } from '@warrenbuckley/audio-visualizer';
  *
  * const viz = document.querySelector('audio-visualizer') as AudioVisualizer;
  * await viz.startMicrophone();

@@ -11,14 +11,14 @@ Ported from LiveKit's [`AgentAudioVisualizerBar`](https://docs.livekit.io/refere
 **npm**
 
 ```bash
-npm install audio-visualizer lit
+npm install @warrenbuckley/audio-visualizer lit
 ```
 
 **CDN (no install)**
 
 ```html
 <script type="module"
-  src="https://cdn.jsdelivr.net/npm/audio-visualizer/dist/audio-visualizer.standalone.js">
+  src="https://cdn.jsdelivr.net/npm/@warrenbuckley/audio-visualizer/dist/audio-visualizer.standalone.js">
 </script>
 ```
 
@@ -34,7 +34,7 @@ npm install audio-visualizer lit
     <button id="btn">Start microphone</button>
 
     <script type="module"
-      src="https://cdn.jsdelivr.net/npm/audio-visualizer/dist/audio-visualizer.standalone.js">
+      src="https://cdn.jsdelivr.net/npm/@warrenbuckley/audio-visualizer/dist/audio-visualizer.standalone.js">
     </script>
 
     <script type="module">

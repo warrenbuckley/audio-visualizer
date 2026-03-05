@@ -15,7 +15,7 @@ The fastest path — no npm, no bundler. Save as an `.html` file and open in a b
     <button id="btn">Start microphone</button>
 
     <script type="module"
-      src="https://cdn.jsdelivr.net/npm/audio-visualizer/dist/audio-visualizer.standalone.js">
+      src="https://cdn.jsdelivr.net/npm/@warrenbuckley/audio-visualizer/dist/audio-visualizer.standalone.js">
     </script>
 
     <script type="module">
@@ -32,13 +32,13 @@ The fastest path — no npm, no bundler. Save as an `.html` file and open in a b
 After installing via npm:
 
 ```bash
-npm install audio-visualizer lit
+npm install @warrenbuckley/audio-visualizer lit
 ```
 
 Import the component once (side-effect import — registers the custom element globally):
 
 ```ts
-import 'audio-visualizer';
+import '@warrenbuckley/audio-visualizer';
 ```
 
 Then use the tag anywhere in your HTML or templates:

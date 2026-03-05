@@ -1,5 +1,5 @@
 {
-  "name": "audio-visualizer",
+  "name": "@warrenbuckley/audio-visualizer",
   "version": "1.0.0",
   "description": "A Lit WebComponent that visualises real-time microphone frequency bands as animated bars. Ported from the LiveKit AgentAudioVisualizerBar React component.",
   "keywords": [
