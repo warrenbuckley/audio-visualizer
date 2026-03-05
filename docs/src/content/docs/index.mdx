@@ -1,9 +1,12 @@
 ---
-title: "<audio-visualizer>"
+title: "audio-visualizer"
 description: A Lit WebComponent that visualises real-time microphone frequency bands as animated bars. Zero runtime dependencies beyond Lit.
 template: splash
+banner:
+  content: |
+    Ported from LiveKit's React <a href="https://docs.livekit.io/reference/components/agents-ui/component/agent-audio-visualizer-bar/">AgentAudioVisualizerBar</a> as a WebComponent
 hero:
-  title: "<audio-visualizer>"
+  title: "Audio Visualizer"
   tagline: Real-time microphone audio as animated frequency-band bars. A Lit WebComponent — zero dependencies beyond Lit, works in any framework.
   actions:
     - text: Get started
@@ -20,42 +23,61 @@ hero:
       variant: minimal
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Card, CardGrid, Steps } from "@astrojs/starlight/components";
 
 ## Why `<audio-visualizer>`?
 
 <CardGrid>
   <Card title="Drop-in ready" icon="rocket">
-    One import registers the element globally. No framework setup, no build tool required when using the standalone CDN build.
+    One import registers the element globally. No framework setup, no build tool
+    required when using the standalone CDN build.
   </Card>
   <Card title="Framework agnostic" icon="puzzle">
-    Works in plain HTML, React, Vue, Angular, Svelte — anywhere you can write a custom element tag.
+    Works in plain HTML, React, Vue, Angular, Svelte — anywhere you can write a
+    custom element tag.
   </Card>
   <Card title="Faithful to LiveKit" icon="bars">
-    Ported from LiveKit's `AgentAudioVisualizerBar`. Uses the same dB-normalised multiband analysis — the visual behaviour matches exactly.
+    Ported from LiveKit's `AgentAudioVisualizerBar`. Uses the same dB-normalised
+    multiband analysis — the visual behaviour matches exactly.
   </Card>
   <Card title="Themeable" icon="seti:css">
-    CSS custom properties (`--audio-visualizer-color`, `--audio-visualizer-transition`) make it fit any design system.
+    CSS custom properties (`--audio-visualizer-color`,
+    `--audio-visualizer-transition`) make it fit any design system.
   </Card>
 </CardGrid>
 
 ## Minimal example
 
-```html
-<!-- 1. Load the component (standalone CDN — zero install) -->
-<script type="module"
-  src="https://cdn.jsdelivr.net/npm/audio-visualizer/dist/audio-visualizer.standalone.js">
-</script>
+<Steps>
 
-<!-- 2. Place the element -->
-<audio-visualizer id="viz" size="md" style="--audio-visualizer-color: #6366f1"></audio-visualizer>
-<button id="btn">Start microphone</button>
+1. Import the component into your MDX file:
 
-<script type="module">
-  document.getElementById('btn').addEventListener('click', async () => {
-    await document.getElementById('viz').startMicrophone();
-  });
-</script>
-```
+   ```js
+   <script 
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/audio-visualizer/dist/audio-visualizer.standalone.js">
+   </script>
+   ```
 
-Save as an `.html` file and open in any modern browser (served via HTTPS or `localhost` for mic access).
+2. Add the element `<audio-visualizer>`
+
+   ```html
+   <audio-visualizer
+      id="viz"
+      size="md"
+      style="--audio-visualizer-color: #6366f1"
+   ></audio-visualizer>
+
+   <button id="btn">Start microphone</button>
+   ```
+
+3. Add script to trigger
+   ```html
+   <script type="module">
+     document.getElementById("btn").addEventListener("click", async () => {
+       await document.getElementById("viz").startMicrophone();
+     });
+   </script>
+   ```
+4. Save as an `.html` file and open in any modern browser (served via HTTPS or `localhost` for mic access).
+</Steps>

@@ -1,73 +1,73 @@
-import { defineConfig } from 'astro/config';
-import starlight from '@astrojs/starlight';
-import catppuccin from '@catppuccin/starlight';
+import { defineConfig } from "astro/config";
+import starlight from "@astrojs/starlight";
+import catppuccin from "@catppuccin/starlight";
 
-// Change `site` and `base` to match your GitHub Pages URL.
-// For a repo named "audio-visualizer" under user "warrenbuckley":
-//   site: 'https://warrenbuckley.github.io'
-//   base: '/audio-visualizer'
 export default defineConfig({
-  site: 'https://warrenbuckley.github.io',
-  base: '/audio-visualizer',
+  site: "https://warrenbuckley.github.io",
+  base: "/",
   // Bind to all interfaces so GitHub Codespaces port forwarding works.
   server: { host: true },
   integrations: [
     starlight({
-      title: '<audio-visualizer>',
+      title: "<audio-visualizer>",
       description:
-        'A Lit WebComponent that visualises real-time microphone frequency bands as animated bars. Zero runtime dependencies beyond Lit.',
+        "A Lit WebComponent that visualises real-time microphone frequency bands as animated bars. Zero runtime dependencies beyond Lit.",
       plugins: [
         catppuccin({
-          dark:  { flavor: 'mocha',  accent: 'lavender' },
-          light: { flavor: 'latte',  accent: 'lavender' },
+          dark: { flavor: "mocha", accent: "lavender" },
+          light: { flavor: "latte", accent: "lavender" },
         }),
       ],
       social: [
         {
-          icon: 'github',
-          label: 'GitHub',
-          href: 'https://github.com/warrenbuckley/audio-visualizer',
+          icon: "github",
+          label: "GitHub",
+          href: "https://github.com/warrenbuckley/audio-visualizer",
+        },
+        {
+          icon: "linkedin",
+          label: "LinkedIn",
+          href: "https://linked.in/me/warrenbuckley",
         },
       ],
       sidebar: [
         {
-          label: 'Getting Started',
+          label: "Getting Started",
           items: [
-            { label: 'Installation', slug: 'getting-started/installation' },
-            { label: 'Quick Start',  slug: 'getting-started/quick-start'  },
+            { label: "Installation", slug: "getting-started/installation" },
+            { label: "Quick Start", slug: "getting-started/quick-start" },
           ],
         },
         {
-          label: 'Usage',
+          label: "Usage",
           items: [
-            { label: 'Plain HTML',            slug: 'usage/html'       },
-            { label: 'TypeScript / JavaScript', slug: 'usage/typescript' },
-            { label: 'React',                  slug: 'usage/react'     },
-            { label: 'Vue',                    slug: 'usage/vue'       },
+            { label: "Plain HTML", slug: "usage/html" },
+            { label: "TypeScript / JavaScript", slug: "usage/typescript" },
+            { label: "React", slug: "usage/react" },
+            { label: "Vue", slug: "usage/vue" },
           ],
         },
         {
-          label: 'Guides',
+          label: "Guides",
           items: [
-            { label: 'Device Switching', slug: 'guides/device-switching' },
+            { label: "Device Switching", slug: "guides/device-switching" },
           ],
         },
         {
-          label: 'Concepts',
-          items: [
-            { label: 'Architecture', slug: 'concepts/architecture' },
-          ],
+          label: "Concepts",
+          items: [{ label: "Architecture", slug: "concepts/architecture" }],
         },
         {
-          label: 'Reference',
+          label: "Reference",
           items: [
-            { label: 'API Reference', slug: 'reference/api'     },
-            { label: 'Styling',       slug: 'reference/styling' },
+            { label: "API Reference", slug: "reference/api" },
+            { label: "Styling", slug: "reference/styling" },
           ],
         },
-        { label: 'Playground', slug: 'playground' },
+        { label: "Playground", slug: "playground" },
       ],
-      customCss: ['./src/styles/custom.css'],
+      customCss: ["./src/styles/custom.css"],
+      lastUpdated: true,
     }),
   ],
 });

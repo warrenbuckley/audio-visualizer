@@ -3,14 +3,14 @@ title: Styling
 description: CSS custom properties and colour approaches for audio-visualizer.
 ---
 
-import { Aside } from '@astrojs/starlight/components';
+import { Aside } from "@astrojs/starlight/components";
 
 ## CSS custom properties
 
-| Property | Default | Description |
-|---|---|---|
-| `--audio-visualizer-color` | `currentColor` | Bar colour. Takes priority over the `color` attribute. Falls back to the inherited CSS `color` property when unset. |
-| `--audio-visualizer-transition` | `100ms` | Duration of bar height transitions. Lower = snappier; higher = smoother. |
+| Property                        | Default        | Description                                                                                                         |
+| ------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `--audio-visualizer-color`      | `currentColor` | Bar colour. Takes priority over the `color` attribute. Falls back to the inherited CSS `color` property when unset. |
+| `--audio-visualizer-transition` | `100ms`        | Duration of bar height transitions. Lower = snappier; higher = smoother.                                            |
 
 ## Three ways to set colour
 
@@ -23,11 +23,10 @@ Keeps colour in CSS — works with design tokens and theme switching.
 audio-visualizer {
   --audio-visualizer-color: #6366f1;
 }
-
-/* Or inline */
 ```
 
 ```html
+/* Or inline */
 <audio-visualizer style="--audio-visualizer-color: #6366f1"></audio-visualizer>
 ```
 
@@ -42,7 +41,8 @@ The bars use `background-color: currentColor` internally. Set `color` on any anc
 ```
 
 <Aside type="tip">
-Inheritance is great for buttons or toolbars where the surrounding text color already matches your brand. Zero extra code.
+  Inheritance is great for buttons or toolbars where the surrounding text color
+  already matches your brand. Zero extra code.
 </Aside>
 
 ### 3. HTML `color` attribute
@@ -57,13 +57,19 @@ A convenience attribute for quick, one-off colour overrides. The `--audio-visual
 
 ```html
 <!-- Snappy — suits fast speech or music -->
-<audio-visualizer style="--audio-visualizer-transition: 40ms"></audio-visualizer>
+<audio-visualizer
+  style="--audio-visualizer-transition: 40ms"
+></audio-visualizer>
 
 <!-- Default -->
-<audio-visualizer style="--audio-visualizer-transition: 100ms"></audio-visualizer>
+<audio-visualizer
+  style="--audio-visualizer-transition: 100ms"
+></audio-visualizer>
 
 <!-- Smooth — suits background ambience -->
-<audio-visualizer style="--audio-visualizer-transition: 250ms"></audio-visualizer>
+<audio-visualizer
+  style="--audio-visualizer-transition: 250ms"
+></audio-visualizer>
 ```
 
 ## Dark / light theme
@@ -72,20 +78,24 @@ The element inherits `currentColor` by default, which means it automatically ada
 
 ```css
 /* Light theme */
-body { color: #111; }
+body {
+  color: #111;
+}
 
 /* Dark theme */
-[data-theme='dark'] { color: #f5f5f5; }
+[data-theme="dark"] {
+  color: #f5f5f5;
+}
 
 /* audio-visualizer bars follow automatically — no extra code */
 ```
 
 ## Size reference
 
-| `size` | Container height | Bar width | Gap | Default bars |
-|--------|-----------------|-----------|-----|--------------|
-| `icon` | 24 px | 4 px | 2 px | 3 |
-| `sm` | 56 px | 8 px | 4 px | 3 |
-| `md` | 112 px | 16 px | 8 px | 5 |
-| `lg` | 224 px | 32 px | 16 px | 5 |
-| `xl` | 448 px | 64 px | 32 px | 5 |
+| `size` | Container height | Bar width | Gap   | Default bars |
+| ------ | ---------------- | --------- | ----- | ------------ |
+| `icon` | 24 px            | 4 px      | 2 px  | 3            |
+| `sm`   | 56 px            | 8 px      | 4 px  | 3            |
+| `md`   | 112 px           | 16 px     | 8 px  | 5            |
+| `lg`   | 224 px           | 32 px     | 16 px | 5            |
+| `xl`   | 448 px           | 64 px     | 32 px | 5            |
