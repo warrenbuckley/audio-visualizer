@@ -65,6 +65,9 @@ npm run dev
 npm run dev --prefix docs
 ```
 
+> **Note:** The docs site is served at `http://localhost:4321/audio-visualizer/` (not the root `/`).
+> Astro prints the full URL in the terminal on startup — follow that link rather than typing the port alone.
+
 ---
 
 ## Scripts
