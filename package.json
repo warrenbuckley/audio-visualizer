@@ -36,8 +36,7 @@
     "build:lib": "vite build --config vite.lib.config.ts",
     "build:standalone": "vite build --config vite.standalone.config.ts",
     "build:cem": "cem analyze --globs \"src/audio-analyzer.ts\" \"src/audio-visualizer.ts\" \"src/index.ts\" --litelement",
-    "preview": "vite preview",
-    "publish:jsr": "npx jsr publish --allow-slow-types"
+    "preview": "vite preview"
   },
   "peerDependencies": {
     "lit": "^3.0.0"

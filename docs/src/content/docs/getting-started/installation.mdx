@@ -1,6 +1,6 @@
 ---
 title: Installation
-description: Install audio-visualizer via npm, JSR, or CDN — no build step required.
+description: Install audio-visualizer via npm or CDN — no build step required.
 ---
 
 import { Tabs, TabItem, Code } from '@astrojs/starlight/components';
@@ -14,38 +14,6 @@ npm install audio-visualizer lit
 ```
 
 `lit` is a `peerDependency`. If your project already uses Lit, only the first install is needed. The main `dist/audio-visualizer.js` bundle keeps Lit **external** so you and the rest of your app share a single copy.
-
----
-
-## JSR
-
-[JSR](https://jsr.io/@warrenbuckley/audio-visualizer) publishes the raw TypeScript source — no compiled output, no separate `.d.ts` needed.
-
-<Tabs>
-  <TabItem label="Deno">
-    ```bash
-    deno add jsr:@warrenbuckley/audio-visualizer
-    ```
-  </TabItem>
-  <TabItem label="Node.js">
-    ```bash
-    npx jsr add @warrenbuckley/audio-visualizer
-    ```
-  </TabItem>
-  <TabItem label="Bun">
-    ```bash
-    bunx jsr add @warrenbuckley/audio-visualizer
-    ```
-  </TabItem>
-</Tabs>
-
-Then import:
-
-```ts
-import { AudioVisualizer } from '@warrenbuckley/audio-visualizer';
-```
-
-JSR also auto-generates reference docs from the JSDoc comments — browse them at [jsr.io/@warrenbuckley/audio-visualizer](https://jsr.io/@warrenbuckley/audio-visualizer).
 
 ---
 
