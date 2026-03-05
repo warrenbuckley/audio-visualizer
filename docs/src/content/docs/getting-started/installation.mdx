@@ -17,38 +17,6 @@ npm install audio-visualizer lit
 
 ---
 
-## JSR
-
-[JSR](https://jsr.io/@warrenbuckley/audio-visualizer) publishes the raw TypeScript source — no compiled output, no separate `.d.ts` needed.
-
-<Tabs>
-  <TabItem label="Deno">
-    ```bash
-    deno add jsr:@warrenbuckley/audio-visualizer
-    ```
-  </TabItem>
-  <TabItem label="Node.js">
-    ```bash
-    npx jsr add @warrenbuckley/audio-visualizer
-    ```
-  </TabItem>
-  <TabItem label="Bun">
-    ```bash
-    bunx jsr add @warrenbuckley/audio-visualizer
-    ```
-  </TabItem>
-</Tabs>
-
-Then import:
-
-```ts
-import { AudioVisualizer } from '@warrenbuckley/audio-visualizer';
-```
-
-JSR also auto-generates reference docs from the JSDoc comments — browse them at [jsr.io/@warrenbuckley/audio-visualizer](https://jsr.io/@warrenbuckley/audio-visualizer).
-
----
-
 ## CDN — no install
 
 The package ships a **standalone build** (`audio-visualizer.standalone.js`) where Lit is bundled inside (~35 kB / ~11 kB gzip). Drop it into any HTML page — no npm, no bundler, no import map.

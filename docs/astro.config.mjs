@@ -43,8 +43,6 @@ export default defineConfig({
           items: [
             { label: "Plain HTML", slug: "usage/html" },
             { label: "TypeScript / JavaScript", slug: "usage/typescript" },
-            { label: "React", slug: "usage/react" },
-            { label: "Vue", slug: "usage/vue" },
           ],
         },
         {
