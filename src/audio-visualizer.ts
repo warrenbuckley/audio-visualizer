@@ -59,6 +59,12 @@ import { AudioAnalyzer } from './audio-analyzer.js';
  */
 export type VisualizerSize = 'icon' | 'sm' | 'md' | 'lg' | 'xl';
 
+const VALID_SIZES: readonly VisualizerSize[] = ['icon', 'sm', 'md', 'lg', 'xl'];
+
+function isVisualizerSize(value: string): value is VisualizerSize {
+  return VALID_SIZES.includes(value as VisualizerSize);
+}
+
 // ---------------------------------------------------------------------------
 // Internal constants
 // ---------------------------------------------------------------------------
@@ -225,6 +231,10 @@ export class AudioVisualizer extends LitElement {
     return this.micState === 'active';
   }
 
+  private get effectiveSize(): VisualizerSize {
+    return isVisualizerSize(this.size) ? this.size : 'md';
+  }
+
   /**
    * Requests microphone access and starts the bar animation loop.
    *
@@ -315,7 +325,7 @@ export class AudioVisualizer extends LitElement {
    * `Element.animate()` from the Web Animations API.
    */
   private tick = (): void => {
-    const count = this.barCount ?? defaultBarCount(this.size);
+    const count = this.barCount ?? defaultBarCount(this.effectiveSize);
     this.bands = this.analyzer?.getBands(count) ?? new Array(count).fill(0);
     this.rafId = requestAnimationFrame(this.tick);
   };
@@ -367,8 +377,9 @@ export class AudioVisualizer extends LitElement {
   // -------------------------------------------------------------------------
 
   override render() {
-    const count = this.barCount ?? defaultBarCount(this.size);
-    const cfg   = SIZE_CONFIG[this.size];
+    const size = this.effectiveSize;
+    const count = this.barCount ?? defaultBarCount(size);
+    const cfg   = SIZE_CONFIG[size];
 
     // The container's color property is the single source of truth for bar
     // colour — bars use `currentColor`, so changing `color` here propagates

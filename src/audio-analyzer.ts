@@ -108,6 +108,7 @@ function normalizeDb(value: number): number {
  * ```
  */
 export class AudioAnalyzer {
+  private readonly stream: MediaStream;
   private readonly context: AudioContext;
   private readonly analyser: AnalyserNode;
   private readonly source: MediaStreamAudioSourceNode;
@@ -119,10 +120,12 @@ export class AudioAnalyzer {
   private readonly dataArray: Float32Array<ArrayBuffer>;
 
   private constructor(
+    stream: MediaStream,
     context: AudioContext,
     analyser: AnalyserNode,
     source: MediaStreamAudioSourceNode,
   ) {
+    this.stream = stream;
     this.context = context;
     this.analyser = analyser;
     this.source = source;
@@ -176,7 +179,7 @@ export class AudioAnalyzer {
     const source = context.createMediaStreamSource(stream);
     source.connect(analyser);
 
-    return new AudioAnalyzer(context, analyser, source);
+    return new AudioAnalyzer(stream, context, analyser, source);
   }
 
   // -------------------------------------------------------------------------
@@ -248,6 +251,9 @@ export class AudioAnalyzer {
    */
   destroy(): void {
     this.source.disconnect();
+    for (const track of this.stream.getTracks()) {
+      track.stop();
+    }
     void this.context.close();
   }
 }

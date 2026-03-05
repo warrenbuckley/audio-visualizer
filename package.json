@@ -47,7 +47,9 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && npm run build:lib && npm run build:standalone && npm run build:cem",
+    "build:demo": "tsc && vite build",
     "build:lib": "vite build --config vite.lib.config.ts",
     "build:standalone": "vite build --config vite.standalone.config.ts",
     "build:cem": "cem analyze --globs \"src/audio-analyzer.ts\" \"src/audio-visualizer.ts\" \"src/index.ts\" --litelement",
