@@ -27,12 +27,19 @@
         font-size: 0.9rem;
         cursor: pointer;
       }
-      button:hover { background: #222f5a; }
+
+      button:hover { 
+        background: #222f5a;
+      }
+
+      audio-visualizer {
+        --audio-visualizer-color: #6366f1;
+      }
     </style>
 
     <!-- Standalone build — Lit bundled in, zero install needed -->
     <script type="module"
-      src="https://cdn.jsdelivr.net/npm/audio-visualizer/dist/audio-visualizer.standalone.js">
+      src="https://cdn.jsdelivr.net/npm/@warrenbuckley/audio-visualizer/dist/audio-visualizer.standalone.js">
     </script>
   </head>
   <body>
@@ -42,7 +49,7 @@
       id="viz"
       size="md"
       bar-count="5"
-      style="--audio-visualizer-color: #6366f1;"
+      style=""
     ></audio-visualizer>
 
     <button id="btn">▶ Start microphone</button>
