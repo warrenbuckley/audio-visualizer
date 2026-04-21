@@ -11,8 +11,8 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.37.6",
-    "@catppuccin/starlight": "^1.1.1",
-    "astro": "^5.0.0"
+    "@astrojs/starlight": "^0.38.3",
+    "@catppuccin/starlight": "^2.0.1",
+    "astro": "^6.1.8"
   }
 }
